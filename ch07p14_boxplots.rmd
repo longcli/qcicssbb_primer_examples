@@ -1,0 +1,60 @@
+---
+title: "CH07P14 Box Plots"
+author: "crl"
+date: "January 9, 2018"
+output: html_document
+---
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# QCI Six Sigma Primer
+## Box Plot Example
+
+## Load Packages
+```{r load packages, echo = TRUE}
+library(ggplot2)
+library(tidyverse)
+```
+
+
+## Get Data
+We can load data from a csv file, such as:
+```{r load data, echo = TRUE}
+(dat_boxplot = read.csv('data/ch07p14-boxplot-simulated-data.csv', header = TRUE, stringsAsFactors = FALSE))
+```
+
+## Summary statistics by group
+```{r summary stats}
+dat_boxplot %>% 
+  na.omit() %>% 
+  group_by(group) %>% 
+  summarise(n = n(), 
+            mean = mean(measurement, na.rm = TRUE), 
+            sd = sd(measurement, na.rm = TRUE),
+            min = min(measurement, na.rm = TRUE),
+            Q1 = quantile(measurement, probs = 0.25, na.rm = TRUE),
+            median = quantile(measurement, probs = 0.5, na.rm = TRUE),
+            Q3 = quantile(measurement, probs = 0.75, na.rm = TRUE),
+            max = max(measurement, na.rm = TRUE)
+            )
+```
+
+## Create box plot using Base R.
+```{r boxplot, echo = TRUE}
+with(dat_boxplot, boxplot(measurement))
+```
+
+## Create box plot by group using ggplot2.
+```{r boxplot ggplot, echo = TRUE}
+ggplot(dat_boxplot, aes(x = group, y = measurement, color = group)) + geom_boxplot(notch = FALSE, na.rm = TRUE)
+```
+
+## Create box plot with notches.
+```{r boxplot notched, echo = TRUE}
+ggplot(dat_boxplot, aes(x = group, y = measurement, color = group)) + geom_boxplot(notch = TRUE, na.rm = TRUE)
+```
+
+
+## End

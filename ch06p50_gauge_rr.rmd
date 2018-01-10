@@ -1,0 +1,45 @@
+---
+title: "CH06P50 Gauge R&R"
+author: "crl"
+date: "January 6, 2018"
+output: html_document
+---
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# QCI Six Sigma Primer
+## Gauge R&R Example
+### Chapter 6
+
+## Load Packages
+```{r, load packages, echo = TRUE}
+library(tidyverse)
+library(SixSigma)
+library(qcc)
+#library(here)
+#library(qcilssbb)
+```
+
+## Get Data
+We can load data from a csv file, such as:
+```{r, load data}
+dat_grr = read.csv('data/ch06p50-gauge-rr.csv', header = TRUE, stringsAsFactors = FALSE)
+```
+
+```{r glimpse data}
+glimpse(dat_grr)
+```
+
+```{r data head}
+head(dat_grr)
+```
+
+
+## Conduct gauge R&R analysis.
+```{r, grr analysis, fig.width=12, fig.height=12}
+grrout <- ss.rr(var = measure, part = part, appr = tech, data = dat_grr)
+```
+
+## End

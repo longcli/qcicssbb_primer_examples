@@ -1,0 +1,147 @@
+---
+title: "CH08P17 Factor Analysis and PCA"
+author: "crl"
+date: "January 10, 2018"
+output: html_document
+---
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# QCI Six Sigma Primer
+## Factor Analysis (FA) and Principle Components Analysis (PCA)
+
+## Load Packages
+```{r load packages, echo = TRUE}
+library(tidyverse)
+library(corrplot)
+```
+
+
+## Get Data
+We can load data from a csv file, such as:
+```{r load data, echo = TRUE}
+(dat_fa_orig = read.csv('data/ch08p19-discriminant-analysis.csv', header = TRUE, stringsAsFactors = FALSE))
+```
+
+<!-- Convert to long format -->
+<!-- ```{r convert to matrix} -->
+<!-- (dat_fa <- dat_fa_orig[,1:6] %>%  # drops 'newecon' column which is not needed for FA -->
+<!--   gather(characteristic, score, creative, entrep, projects, hightech, venture)) -->
+
+<!-- ``` -->
+
+## Factor Analysis
+
+We should note that Factor Analysis and Principle Component Analysis might appear to be similar but serve different purposes.
+
+- Factor Analysis uses manifest variables (things we observe) to understand latent variables (things that we cannot/do not observe)
+- PCA uses only manifest (observed) variables
+- [more info](https://web.stanford.edu/class/psych253/tutorials/FactorAnalysis.html)
+
+
+### Initial review of data
+
+Use correlation matrix and plot.
+- [read more](https://rstudio-pubs-static.s3.amazonaws.com/240657_5157ff98e8204c358b2118fa69162e18.html)
+
+
+Correlation Matrix
+```{r correlation matrix}
+round(cor(dat_fa_orig[,2:6]), 2)
+```
+
+
+Scatterplot Matrix
+```{r scatterplot matrix}
+corrplot(cor(dat_fa_orig[,2:6]), method = 'ellipse')
+```
+
+
+
+### Distinguish major factors (unrotated)
+
+[Factor Analysis in R](https://www.promptcloud.com/blog/exploratory-factor-analysis-in-r/)
+[PCA and FA in R](https://www.statmethods.net/advstats/factor.html)
+
+More libraries:
+```{r more libraries}
+library(psych)
+library(GPArotation)
+library(nFactors)
+library(factoextra)
+```
+```{r number of factors, echo = TRUE}
+# Determine Number of Factors to Extract
+matdat <- as.matrix(dat_fa_orig[,2:6])
+ev <- eigen(cor(matdat)) # get eigenvalues
+ap <- parallel(subject=nrow(matdat),var=ncol(matdat),
+  rep=100,cent=.05)
+nS <- nScree(x=ev$values, aparallel=ap$eigen$qevpea)
+plotnScree(nS)
+```
+
+
+Unrotated Factor Loadings
+    Same method as the Primer (unrotated) but different numbers in results.
+    
+```{r fa unrotated}
+(fa_out <- fa(dat_fa_orig[,2:6], nfactor = 2, rotate = 'none', fm = 'minres'))
+```
+
+```{r scree plot}
+scree(dat_fa_orig[,2:6])
+```
+
+### Distinguish major factors (rotate factors to improve meaning/interpretability)
+
+```{r fa rotated}
+(fa_out2 <- fa(dat_fa_orig[,2:6], nfactor = 2, rotate = 'varimax', fm = 'wls'))
+```
+
+## Principle Components Analysis
+```{r pca}
+(pca_out <- prcomp(dat_fa_orig[,2:6], scale = TRUE))
+```
+
+PCA Scree Plot
+```{r plot pca 1}
+fviz_eig(pca_out)
+```
+
+Graph of variables.
+```{r plot pca 2}
+fviz_pca_var(pca_out,
+             col.var = "contrib", # Color by contributions to the PC
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE     # Avoid text overlapping
+             )
+```
+
+
+Biplot of individuals and variables
+```{r pca biplot}
+fviz_pca_biplot(pca_out, repel = TRUE,
+                col.var = "#2E9FDF", # Variables color
+                col.ind = "#696969"  # Individuals color
+                )
+```
+
+PCA loadings - MATCHES QCI CSSBB Primer CH08P17
+```{r pca loading}
+# Helper function 
+#::::::::::::::::::::::::::::::::::::::::
+var_coord_func <- function(loadings, comp.sdev){
+  loadings*comp.sdev
+}
+# Compute Coordinates
+#::::::::::::::::::::::::::::::::::::::::
+loadings <- pca_out$rotation
+sdev <- pca_out$sdev
+var.coord <- t(apply(loadings, 1, var_coord_func, sdev)) 
+head(var.coord[, 1:4])
+```
+
+
+## End

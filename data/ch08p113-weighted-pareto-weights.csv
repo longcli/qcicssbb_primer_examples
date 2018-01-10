@@ -1,0 +1,13 @@
+category,level,weight
+A,critical,100
+B,minor,10
+C,major,25
+D,minor,10
+E,major,25
+F,incidental,1
+G,critical,100
+H,incidental,1
+I,minor,10
+J,incidental,1
+K,major,25
+L,critical,100

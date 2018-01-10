@@ -1,0 +1,278 @@
+---
+title: "CH08P03 Simple Linear Regression"
+author: "crl"
+date: "January 6, 2018"
+output: html_document
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# QCI Six Sigma Primer
+## Simple Linear Regression Example
+
+## Load Packages
+```{r load packages, echo = TRUE}
+library(ggplot2)
+library(car)
+library(lmtest)
+library(vrtest)
+```
+
+## Get Data
+We can load data from a csv file, such as:
+```{r load data}
+(dat_slr = read.csv('data/ch08p03-simple-linear-regression.csv', header = TRUE, stringsAsFactors = FALSE))
+
+```
+
+# Create Model
+```{r create model}
+fit = lm(results ~ time, data = dat_slr)
+```
+
+
+# Model Results
+
+## Model Summary
+```{r model summary}
+summary(fit)
+```
+
+## Model ANOVA Table
+```{r model anova}
+anova(fit)
+```
+
+## Regression Confidence Band
+```{r plot with confbands}
+ggplot(dat_slr, aes(x = time, y = results)) +
+    geom_point(shape=1) +    # Use hollow circles
+    geom_smooth(method=lm)   # Add linear regression line 
+```
+
+## Regression Confidence Band and Prediction Band together
+```{r conf and pred bands}
+temp_var <- predict(fit, interval="prediction")
+
+new_df <- cbind(dat_slr, temp_var)
+
+ggplot(new_df, aes(time, results))+
+    geom_point() +
+    geom_line(aes(y=lwr), color = "red", linetype = "dashed")+
+    geom_line(aes(y=upr), color = "red", linetype = "dashed")+
+    geom_smooth(method=lm, se=TRUE)
+
+```
+
+# Model Diagnostics
+
+## Plot residuals vs fitted values
+```{r plot resids vs fitted}
+fitted.y = fit$fitted
+
+# plot residuals vs fitted
+plot(fitted.y, residuals(fit))
+title("Residuals vs Fitted Values")
+grid()
+```
+
+
+## Normality of Model Residuals
+
+### Test normality using Shapiro-Wilks test 
+```{r sw norm test}
+res.shapiro = shapiro.test(residuals(fit))
+
+print(res.shapiro)
+
+if (res.shapiro$p.value < 0.05){
+  print("Nonnormally distributed residuals")} else {
+    print("Normally distributed residuals")
+  }
+```
+
+### Residuals Normality Probability Plot
+```{r normprob plot}
+qqPlot(residuals(fit), main = "Normal Plot of Residuals")
+```
+
+
+## Overview of Influence Measures
+```{r infl overview}
+infl.fit = influence.measures(fit)
+
+print("Summary of influential observations:")
+summary(infl.fit)
+```
+
+```{r infl most}
+id.infl = which(apply(infl.fit$is.inf, 1, any))
+
+print("Most influential observations:")
+id.infl
+```
+
+
+
+## Cook's Distance Diagnostics
+
+### All Cooks Distance Values
+```{r cooksd}
+print("All Cook's D values")
+(fit.cook = cooks.distance(fit))
+```
+
+## Noteworthy Cooks Distance Values
+```{r cooksd infl}
+infl.cook <- which(fit.cook > 3*mean(fit.cook))
+
+print("Cases where Cooks D is noteworthy")
+if (length(infl.cook)) {
+  print("Influential Cook's D cases")
+  infl.cook
+} else {
+  print("No influential Cooks D")
+}
+```
+
+
+
+## Plot Cook's D 
+```{r cooksd plot}
+infl.cook = which(fit.cook > 3*mean(fit.cook))
+
+# plot Cooks Distance
+plot(fit.cook)
+abline(h = c(1,3)*mean(fit.cook), col = 2)
+title("Cook's Distance")
+grid()
+
+if (length(infl.cook) > 0){ text(infl.cook, fit.cook[infl.cook], rownames(dat)[infl.cook], pos = 2, xpd = TRUE) }
+```
+
+
+## Studentized Residuals Diagnostics
+
+### Noteworthy Studentized Residuals
+```{r studres noteworthy}
+fit.studres = rstudent(fit)
+infl.studres <- which(abs(fit.studres) > 3)
+
+print("Cases where Studentized Residuals are noteworthy")
+if (length(infl.studres)) {
+  print("Influential studentized residual cases")
+  infl.studres
+} else {
+  print("No influential studentized residual")
+}
+```
+
+
+
+# Plot of Studentized Residuals
+```{r studres plot}
+plot(rstudent(fit), ylim = c(-4,4))
+abline(h = c(-3,+3), col = 'red', lty = 3)
+title('Studentized Residuals')
+grid()
+
+
+if (length(infl.studres) > 0){ text(infl.studres, fit.studres[infl.studres], rownames(dat)[infl.studres], pos = 2, xpd = TRUE) }
+```
+
+
+## Leverage Diagnostics
+
+## LEVERAGE based on HAT MATRIX
+```{r leverage hat matrix}
+fit.hat = hatvalues(fit)
+infl.hat <- which(fit.hat > 3*mean(fit.hat))
+
+print("Cases where Leverage is noteworthy")
+if (length(infl.hat)) {
+  print("Influential leverage")
+  infl.hat
+} else {
+  print("No influential leverage")
+}
+
+```
+
+
+## Plot of Leverage Diagnostics
+```{r leverage diag}
+calcylim = max(3*mean(fit.hat), max(fit.hat))
+
+plot(fit.hat, ylim = c(0,calcylim))
+abline(h = 3*mean(fit.hat), col = 2)
+title('Leverage')
+grid()
+
+if (length(infl.hat) > 0){ text(infl.hat, fit.hat[infl.hat], rownames(dat)[infl.hat], pos = 2, xpd = TRUE) }
+```
+
+
+## Functional Form Diagnostic
+
+Is the mean of the residuals constant (= 0) across the domain of the model?
+
+```{r fform diag}
+# test for functional form
+# conditional mean of residuals equal to zero
+# using the RESET test
+
+res.fform = resettest(fit)
+
+if (res.fform$p.value < 0.05){
+  print("Functional Form is Misspecified [E(e|X) <> 0]")} else {
+    print("Functional Form is Adequate [E(e|X) = 0]")
+  }
+```
+
+
+## Constant Variance Diagnostics
+
+### Breusch-Pagan test for heteroskedasticity
+```{r breuschpagan}
+res.bp = bptest(fit)
+print(paste('Breusch-Pagan test p-value = ', round(res.bp$p.value, 4)))
+
+if (res.bp$p.value < 0.05){
+  print("Residuals have NON-constant variance")} else {
+    print("Residuals have constant variance")
+  }
+```
+
+## Autocorrelation Diagnostics
+
+### Box-Ljung Test
+```{r boxljung}
+# the Box-Ljung test only tests for specific individual lags
+
+(res.box = Box.test(residuals(fit), lag = 1, type = "Ljung-Box"))
+
+print("Box-Ljung Test for autocorrelation")
+
+if (res.box$p.value < 0.05){
+  print("Residuals NOT independent (autocorrelation)")} else {
+    print("Residuals independent (no autocorrelation)")
+  }
+```
+
+### Portmanteau Test
+```{r portm test}
+# the Auto.Q function uses a portmanteau test with multi-lags (10 by default)
+
+portm.multilag = Auto.Q(y = residuals(fit), lags = length(residuals(fit))/2)
+
+print("Portmanteau Test for autocorrelation")
+
+if (portm.multilag$Pvalue < 0.05){
+  print("Residuals NOT independent (autocorrelation)")} else {
+    print("Residuals independent (no autocorrelation)")
+  }
+```
+
+End

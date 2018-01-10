@@ -1,0 +1,41 @@
+---
+title: "CH07P15 Stem and Leaf Plot"
+author: "crl"
+date: "January 6, 2018"
+output: html_document
+---
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# QCI Six Sigma Primer
+## Stem and Leaf Plot Example
+
+## Load Packages
+```{r load packages, echo = TRUE}
+# library(here)
+# library(qcilssbb)
+```
+
+```{r load data not used, echo = FALSE, include = FALSE}
+# dat_stemleaf = read.csv(here('data', 'ch07p15-stem-and-leaf-plot.csv'), header = TRUE, stringsAsFactors = FALSE
+```
+
+## Get Data
+We can load data from a csv file, such as:
+```{r load data, echo = TRUE}
+(dat_stemleaf = read.csv('data/ch07p15-stem-and-leaf-plot.csv', header = FALSE, stringsAsFactors = FALSE))
+```
+
+Convert to matrix
+```{r convert to matrix}
+(mat_stemleaf <- as.matrix(dat_stemleaf))
+```
+
+## Create stem and leaf plot.
+```{r create stem and leaf plot, echo = TRUE}
+stem(mat_stemleaf)
+```
+
+## End
