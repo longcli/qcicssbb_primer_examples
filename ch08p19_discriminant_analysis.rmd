@@ -1,0 +1,114 @@
+---
+title: "CH08P19 Discriminant Analysis"
+author: "crl"
+date: "January 10, 2018"
+output: html_document
+---
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# QCI Six Sigma Primer
+## Discriminant Analysis
+
+## Load Packages
+```{r load packages, echo = TRUE}
+library(tidyverse)
+library(corrplot)
+library(MASS)
+library(klaR)
+```
+
+## Read about Disciminant Analysis
+
+[Example here](https://www.statmethods.net/advstats/discriminant.html)
+
+[Read more](https://rstudio-pubs-static.s3.amazonaws.com/35817_2552e05f1d4e4db8ba87b334101a43da.html)
+
+[Presentation](https://docs.google.com/presentation/d/e/2PACX-1vT9AwYm6slRlNRYry7PCXhHTJIP8zXTOrcBFP_YG39J2NrBZDj0Yakt_vG3ptz-LBOA2GYBO3l5Q4Ib/pub?start=false&loop=false&delayms=5000)
+
+
+
+## Get Data
+We can load data from a csv file, such as:
+```{r load data, echo = TRUE}
+(dat_da = read.csv('data/ch08p19-discriminant-analysis.csv', header = TRUE, stringsAsFactors = FALSE))
+```
+
+
+
+## Linear Discriminant Analysis
+
+### Fit discriminant function
+
+```{r fit lda, echo = TRUE}
+(fit_lda <- lda(newecon ~ creative + entrep + projects + hightech + venture, na.action = "na.omit", data = dat_da))
+# CV = FALSE, prior=c(1,1)/2))
+```
+
+### Assess the accuracy of the prediction
+
+Percent correct for each category of the response variable.
+
+```{r lda accuracy}
+ct <- table(dat_da$newecon, predict(fit_lda, dat_da)$class)
+diag(prop.table(ct, 1))
+cat("\n Total percent correct \n")
+sum(diag(prop.table(ct)))
+```
+
+### Scatter plot using discriminant dimension(s)
+
+```{r lda discrim scatterplot}
+plot(fit_lda) # fit from lda
+```
+
+### Partition Plot Graphs for LDA
+
+```{r lda partition plots}
+library(klaR)
+partimat(factor(newecon) ~ creative + entrep + projects + hightech + venture, data = dat_da, method="lda", plot.matrix = TRUE)
+```
+
+
+### Scatterplot for 2 Group Problem
+
+```{r scatterplot of group by explanatory}
+pairs(dat_da[,c("creative", "entrep", "projects", "hightech", "venture")], pch = 22, bg = c('red','yellow'))
+```
+
+
+## Quadratic Discriminant Analysis
+
+NOTE:  For this QDA example need to remove certain explanatory variables for demonstration purposes only.
+
+### Fit discriminant function
+```{r fit qda, echo = TRUE}
+(fit_qda <- qda(newecon ~ entrep + projects + hightech, na.action = "na.omit", data = dat_da))
+# CV = FALSE, prior=c(1,1)/2))
+```
+
+
+### Assess the accuracy of the prediction
+
+Percent correct for each category of the response variable.
+
+```{r qda accuracy}
+ctq <- table(dat_da$newecon, predict(fit_qda, dat_da)$class)
+diag(prop.table(ctq, 1))
+cat("\n Total percent correct \n")
+sum(diag(prop.table(ctq)))
+```
+
+
+### Partition Plot Graphs for QDA
+
+```{r qda partition plots}
+partimat(factor(newecon) ~ entrep + projects + hightech, data = dat_da, method="qda", plot.matrix = TRUE)
+```
+
+
+
+
+## End

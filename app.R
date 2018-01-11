@@ -48,11 +48,6 @@ ui <- dashboardPage(
               menuItem("Box Plot",
                        tabName = "boxplot",
                        icon = icon("th")
-                       ),
-              
-              menuItem("Simple Linear Regression",
-                       tabName = "slreg",
-                       icon = icon("th")
                        )
               
               ),  # end menuItem Examples
@@ -68,7 +63,12 @@ ui <- dashboardPage(
               menuItem("Factor Analysis and PCA",
                        tabName = "fapca",
                        icon = icon("th")
-                       )
+                       ),
+              
+              menuItem("Discriminant Analysis",
+                       tabName = "discrim",
+                       icon = icon("th")
+                      )
               
               )  # end menuItem Examples
 
@@ -106,6 +106,11 @@ ui <- dashboardPage(
       
       tabItem(tabName = "fapca",
               uiOutput("fapca_markdown")
+      ),
+      
+      
+      tabItem(tabName = "discrim",
+              uiOutput("discrim_markdown")
       )
     
     )  # end tabItems
@@ -142,6 +147,10 @@ server <- function(input, output, session){
   
   output$fapca_markdown <- renderUI({
     includeHTML("ch08p17_factor_analysis.html")
+  })
+  
+  output$discrim_markdown <- renderUI({
+    includeHTML("ch08p19_discriminant_analysis.html")
   })
 
 }
