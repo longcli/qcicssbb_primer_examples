@@ -62,12 +62,13 @@ plot(1:(nrow_dat-1), wss, type="b", xlab="Number of Clusters", ylab="Within grou
 
 ### Clustering based on hierarchical clustering
 
-distance options:
-    "euclidean", "maximum", "manhattan", "canberra", "binary" or "minkowski"
+* distance options:  
++ "euclidean", "maximum", "manhattan", "canberra", "binary" or "minkowski"
 
-hclust options:
-    "ward.D", "ward.D2", "single", "complete", "average" (= UPGMA) 
-    "mcquitty" (= WPGMA), "median" (= WPGMC) or "centroid"
+* hclust options:  
++ "ward.D", "ward.D2", "single", "complete", "average" (= UPGMA) 
++ "mcquitty" (= WPGMA), "median" (= WPGMC) or "centroid"
+
 
 ```{r fit cluster, echo = TRUE}
 # Ward Hierarchical Clustering

@@ -32,6 +32,7 @@ library(tidyverse)
 library(corrplot)
 library(MASS)
 library(klaR)
+library(mvnormtest)
 ```
 
 
@@ -114,6 +115,66 @@ partimat(factor(newecon) ~ entrep + projects + hightech, data = dat_da, method="
 ```
 
 
+## Model Assumptions
+
+### Multivariate Normality
+
+[Read about MVN](https://www.statmethods.net/stats/anovaAssumptions.html)
+
+Multivariate normality requires:
+- univariate normality of each variable
+- normality of all linear combinations of variables
+
+Univariate Normality
+```{r univariate normality}
+num_da <- dat_da[sapply(dat_da, is.numeric)]
+lshap <- lapply(num_da, shapiro.test)
+lres <- t(sapply(lshap, `[`, c("statistic","p.value")))
+
+cat('Univariate Normality for each column (Shapiro-Wilk test)\n')
+print(lres)
+
+```
+
+Q-Q Plots by Variable
+```{r q-q plots}
+# data wide to long
+num_da_long <- gather(num_da, xvariable, xdata, names(num_da), factor_key=TRUE)
+
+ggplot(num_da_long, aes(sample = xdata)) + 
+  stat_qq() + 
+  facet_wrap(~ xvariable, scales = 'free')
+```
+
+
+Histograms by Variable
+```{r hist}
+ggplot(num_da_long, aes(x = xdata)) + 
+  geom_histogram() + 
+  facet_wrap(~ xvariable, scales = 'free')
+```
+
+
+Multivariate Normality
+```{r mvn test}
+mat_da <- as.matrix(num_da)
+mshapiro.test(t(mat_da))
+```
+
+If we have p x 1 multivariate normal random vector x vector
+then the squared Mahalanobis distance between x and μ is going to be chi-square distributed with p degrees of freedom. We can use this fact to construct a Q-Q plot to assess multivariate normality.
+
+### Graphical Assessment of Multivariate Normality
+```{r mvnorm graph}
+x <- mat_da  # n x p numeric matrix
+center <- colMeans(x) # centroid
+n <- nrow(x); p <- ncol(x); cov <- cov(x); 
+d <- mahalanobis(x,center,cov) # distances 
+qqplot(qchisq(ppoints(n),df=p),d,
+  main="QQ Plot Assessing Multivariate Normality",
+  ylab="Mahalanobis D2")
+abline(a=0,b=1)
+```
 
 
 ## End
