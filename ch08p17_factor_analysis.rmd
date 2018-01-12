@@ -10,7 +10,28 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # QCI Six Sigma Primer
-## Factor Analysis (FA) and Principle Components Analysis (PCA)
+## Factor Analysis (FA) and Principal Components Analysis (PCA)
+
+<hr> </hr>
+
+### Read More
+
+We should note that Factor Analysis and Principal Component Analysis might appear to be similar but serve different purposes.
+
+* Factor Analysis uses manifest variables (things we observe) to understand latent variables (things that we cannot/do not observe)
+* PCA uses only manifest (observed) variables
+
+[Example here](https://www.statmethods.net/advstats/factor.html)
+
+[Read more](https://web.stanford.edu/class/psych253/tutorials/FactorAnalysis.html)
+
+[NIST PCA](http://www.itl.nist.gov/div898/handbook/pmc/section5/pmc55.htm)
+
+[Presentation](https://docs.google.com/presentation/d/e/2PACX-1vTfz4FxrVYMDwhNPTBqQprhpIN1Cvi-i0joItkSk41mYi6VSFIgUY5MTSUprpRoqCm3DDqqE6yuTPF6/pub?start=false&loop=false&delayms=10000)
+
+<hr> </hr>
+
+# Analysis
 
 ## Load Packages
 ```{r load packages, echo = TRUE}
@@ -33,13 +54,6 @@ We can load data from a csv file, such as:
 <!-- ``` -->
 
 ## Factor Analysis
-
-We should note that Factor Analysis and Principle Component Analysis might appear to be similar but serve different purposes.
-
-- Factor Analysis uses manifest variables (things we observe) to understand latent variables (things that we cannot/do not observe)
-- PCA uses only manifest (observed) variables
-- [more info](https://web.stanford.edu/class/psych253/tutorials/FactorAnalysis.html)
-
 
 ### Initial review of data
 
@@ -100,7 +114,7 @@ scree(dat_fa_orig[,2:6])
 (fa_out2 <- fa(dat_fa_orig[,2:6], nfactor = 2, rotate = 'varimax', fm = 'wls'))
 ```
 
-## Principle Components Analysis
+## Principal Components Analysis
 ```{r pca}
 (pca_out <- prcomp(dat_fa_orig[,2:6], scale = TRUE))
 ```

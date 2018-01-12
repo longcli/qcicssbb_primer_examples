@@ -12,6 +12,36 @@ knitr::opts_chunk$set(echo = TRUE)
 # QCI Six Sigma Primer
 ## Simple Linear Regression Example
 
+<hr> </hr>
+
+### Read More
+
+[Example here (regression)](https://www.statmethods.net/stats/regression.html)
+
+[Example here (diagnostics 1)](https://www.statmethods.net/stats/rdiagnostics.html)
+
+[Example here (diagnostics 2)](https://www.statmethods.net/stats/anovaAssumptions.html)
+
+[Read more NIST 1](http://www.itl.nist.gov/div898/handbook/pmd/section1/pmd141.htm)
+
+[Read more NIST 2](http://www.itl.nist.gov/div898/handbook/pmd/section4/pmd44.htm)
+
+[Read more NIST 3](http://www.itl.nist.gov/div898/handbook/pmd/section4/pmd445.htm#nppi)
+
+[Presentation Regression](https://docs.google.com/presentation/d/e/2PACX-1vTl9WPkqtxevZscf_ZUkjA0RmvVnqfiQiXwqeuMK1VCuIuDCB55fy5yHnIgtitzpsRmJaR5VxOnms-9/pub?start=false&loop=false&delayms=10000)
+
+[Presentation Deterministic vs Stochastic](https://docs.google.com/presentation/d/e/2PACX-1vRyqYrNMGSIw8q6Q5agrX3KPWEB3U430PmaxtL6gSpNjF2_uWFPpU5wg8hBDQlAbXg4HIabAIuvBbDI/pub?start=false&loop=false&delayms=10000)
+
+[Presentation Dummy Varianbles and Homogeneity of Slopes Model](https://docs.google.com/presentation/d/e/2PACX-1vQ6WfNWWe6B2X0F75iXnGqtVpvVUEkXERHVOqBiGoFHjSJhzDo2cGS0bdSpnF8Cqmo-2enMCHc46p_8/pub?start=false&loop=false&delayms=10000)
+
+[Presentation Importance of Independence Assumption - What's the big deal?](https://docs.google.com/presentation/d/e/2PACX-1vTNCmPfrQUfIs5gCklrrdnQFHOvLKPzuuuj_ZvnuAIusN0n0zhvCBQ8G2dYKDl_hIDFrSWIt4xI17cR/pub?start=false&loop=false&delayms=10000)
+
+[Another demo](https://crlstatistics.shinyapps.io/regression_diagnostics_demo/)
+
+<hr> </hr>
+
+# Analysis
+
 ## Load Packages
 ```{r load packages, echo = TRUE}
 library(ggplot2)

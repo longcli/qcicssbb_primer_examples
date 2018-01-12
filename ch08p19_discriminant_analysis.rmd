@@ -12,15 +12,9 @@ knitr::opts_chunk$set(echo = TRUE)
 # QCI Six Sigma Primer
 ## Discriminant Analysis
 
-## Load Packages
-```{r load packages, echo = TRUE}
-library(tidyverse)
-library(corrplot)
-library(MASS)
-library(klaR)
-```
+<hr> </hr>
 
-## Read about Disciminant Analysis
+### Read More
 
 [Example here](https://www.statmethods.net/advstats/discriminant.html)
 
@@ -28,6 +22,17 @@ library(klaR)
 
 [Presentation](https://docs.google.com/presentation/d/e/2PACX-1vT9AwYm6slRlNRYry7PCXhHTJIP8zXTOrcBFP_YG39J2NrBZDj0Yakt_vG3ptz-LBOA2GYBO3l5Q4Ib/pub?start=false&loop=false&delayms=5000)
 
+<hr> </hr>
+
+# Analysis
+
+## Load Packages
+```{r load packages, echo = TRUE}
+library(tidyverse)
+library(corrplot)
+library(MASS)
+library(klaR)
+```
 
 
 ## Get Data

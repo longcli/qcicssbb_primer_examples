@@ -12,12 +12,9 @@ knitr::opts_chunk$set(echo = TRUE)
 # QCI Six Sigma Primer
 ## Cluster Analysis
 
-## Load Packages
-```{r load packages, echo = TRUE}
-library(tidyverse)
-```
+<hr> </hr>
 
-## Read about Cluster Analysis
+### Read More
 
 [Example here](https://www.statmethods.net/advstats/cluster.html)
 
@@ -25,7 +22,14 @@ library(tidyverse)
 
 [Presentation](https://drive.google.com/open?id=1xf-QAsBf-Z6s8w93aQBQSCWcbHHs62fX)
 
+<hr> </hr>
 
+# Analysis
+
+## Load Packages
+```{r load packages, echo = TRUE}
+library(tidyverse)
+```
 
 ## Get Data
 We can load data from a csv file, such as:

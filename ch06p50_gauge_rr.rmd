@@ -11,7 +11,20 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # QCI Six Sigma Primer
 ## Gauge R&R Example
-### Chapter 6
+
+<hr> </hr>
+
+### Read More
+
+[Resource here](http://www.sixsigmawithr.com/sixsigmawithr.html)
+
+[Read more](https://en.wikipedia.org/wiki/ANOVA_gauge_R%26R)
+
+[Presentation](https://docs.google.com/presentation/d/e/2PACX-1vQnQ7K1qXvHMwfEZgg3Tqb_gocbLJdgcdlQYWgI8tqJKw2Az4yWKPJzl-mZ7GoH4aPhPjnHOAbE_lTV/pub?start=false&loop=false&delayms=10000)
+
+<hr> </hr>
+
+# Analysis
 
 ## Load Packages
 ```{r, load packages, echo = TRUE}
