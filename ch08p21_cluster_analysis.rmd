@@ -1,0 +1,124 @@
+---
+title: "CH08P21 Cluster Analysis"
+author: "crl"
+date: "January 11, 2018"
+output: html_document
+---
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# QCI Six Sigma Primer
+## Cluster Analysis
+
+## Load Packages
+```{r load packages, echo = TRUE}
+library(tidyverse)
+```
+
+## Read about Cluster Analysis
+
+[Example here](https://www.statmethods.net/advstats/cluster.html)
+
+[Read more](https://rstudio-pubs-static.s3.amazonaws.com/33876_1d7794d9a86647ca90c4f182df93f0e8.html)
+
+[Presentation](https://drive.google.com/open?id=1xf-QAsBf-Z6s8w93aQBQSCWcbHHs62fX)
+
+
+
+## Get Data
+We can load data from a csv file, such as:
+```{r load data, echo = TRUE}
+(cdat = read.csv('data/ch08p19-discriminant-analysis.csv', header = TRUE, stringsAsFactors = FALSE))
+```
+
+Scale the numeric columns of the data
+```{r scale data}
+(cdat_scaled <- scale(cdat[sapply(cdat, is.numeric)])) # standardize variables
+```
+
+
+
+## Cluster Analysis
+
+### Fit discriminant function
+
+```{r fit cluster, echo = TRUE}
+# Ward Hierarchical Clustering
+d <- dist(cdat_scaled, method = "euclidean") # distance matrix
+fit_cl <- hclust(d, method="ward.D") 
+```
+
+```{r plot cluster}
+plot(fit_cl) # display dendogram
+groups <- cutree(fit_cl, k=2) # cut tree into 5 clusters
+# draw dendogram with red borders around the 5 clusters 
+rect.hclust(fit_cl, k=2, border="red")
+```
+
+### Assess the accuracy of the prediction
+
+Percent correct for each category of the response variable.
+
+```{r lda accuracy}
+ct <- table(dat_da$newecon, predict(fit_lda, dat_da)$class)
+diag(prop.table(ct, 1))
+cat("\n Total percent correct \n")
+sum(diag(prop.table(ct)))
+```
+
+### Scatter plot using discriminant dimension(s)
+
+```{r lda discrim scatterplot}
+plot(fit_lda) # fit from lda
+```
+
+### Partition Plot Graphs for LDA
+
+```{r lda partition plots}
+library(klaR)
+partimat(factor(newecon) ~ creative + entrep + projects + hightech + venture, data = dat_da, method="lda", plot.matrix = TRUE)
+```
+
+
+### Scatterplot for 2 Group Problem
+
+```{r scatterplot of group by explanatory}
+pairs(dat_da[,c("creative", "entrep", "projects", "hightech", "venture")], pch = 22, bg = c('red','yellow'))
+```
+
+
+## Quadratic Discriminant Analysis
+
+NOTE:  For this QDA example need to remove certain explanatory variables for demonstration purposes only.
+
+### Fit discriminant function
+```{r fit qda, echo = TRUE}
+(fit_qda <- qda(newecon ~ entrep + projects + hightech, na.action = "na.omit", data = dat_da))
+# CV = FALSE, prior=c(1,1)/2))
+```
+
+
+### Assess the accuracy of the prediction
+
+Percent correct for each category of the response variable.
+
+```{r qda accuracy}
+ctq <- table(dat_da$newecon, predict(fit_qda, dat_da)$class)
+diag(prop.table(ctq, 1))
+cat("\n Total percent correct \n")
+sum(diag(prop.table(ctq)))
+```
+
+
+### Partition Plot Graphs for QDA
+
+```{r qda partition plots}
+partimat(factor(newecon) ~ entrep + projects + hightech, data = dat_da, method="qda", plot.matrix = TRUE)
+```
+
+
+
+
+## End
