@@ -25,7 +25,7 @@ ui <- dashboardPage(
                        icon = icon("th")
                        )
               
-              ),
+              ), 
      
       menuItem("Chapter 6",
                icon = icon("book", lib = "font-awesome"),
@@ -68,7 +68,12 @@ ui <- dashboardPage(
               menuItem("Discriminant Analysis",
                        tabName = "discrim",
                        icon = icon("th")
-                      )
+                      ),
+              
+              menuItem("Cluster Analysis",
+                       tabName = "cluster",
+                       icon = icon("th")
+                       )
               
               )  # end menuItem Examples
 
@@ -111,6 +116,10 @@ ui <- dashboardPage(
       
       tabItem(tabName = "discrim",
               uiOutput("discrim_markdown")
+      ),
+      
+      tabItem(tabName = "cluster",
+              uiOutput("cluster_markdown")
       )
     
     )  # end tabItems
@@ -151,6 +160,10 @@ server <- function(input, output, session){
   
   output$discrim_markdown <- renderUI({
     includeHTML("ch08p19_discriminant_analysis.html")
+  })
+  
+  output$cluster_markdown <- renderUI({
+    includeHTML("ch08p21_cluster_analysis.html")
   })
 
 }
