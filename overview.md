@@ -6,7 +6,7 @@ output: html_document
 ---
 
 
-# QCI LSSBB Primer
+# QCI Certified Six Sigma Black Belt Primer 
 
 ## Overview
 
