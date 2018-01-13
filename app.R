@@ -73,6 +73,11 @@ ui <- dashboardPage(
               menuItem("Cluster Analysis",
                        tabName = "cluster",
                        icon = icon("th")
+                       ),
+              
+              menuItem("MANOVA",
+                       tabName = "manova",
+                       icon = icon("th")
                        )
               
               )  # end menuItem Examples
@@ -113,13 +118,16 @@ ui <- dashboardPage(
               uiOutput("fapca_markdown")
       ),
       
-      
       tabItem(tabName = "discrim",
               uiOutput("discrim_markdown")
       ),
       
       tabItem(tabName = "cluster",
               uiOutput("cluster_markdown")
+      ),
+      
+      tabItem(tabName = "manova",
+              uiOutput("manova_markdown")
       )
     
     )  # end tabItems
@@ -164,6 +172,10 @@ server <- function(input, output, session){
   
   output$cluster_markdown <- renderUI({
     includeHTML("ch08p21_cluster_analysis.html")
+  })
+  
+  output$manova_markdown <- renderUI({
+    includeHTML("ch08p26_manova.html")
   })
 
 }

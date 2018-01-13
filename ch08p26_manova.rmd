@@ -1,0 +1,140 @@
+---
+title: "CH08P26 MANOVA"
+author: "crl"
+date: "January 12, 2018"
+output: html_document
+---
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# QCI Six Sigma Primer
+## MANOVA - Multiple Analysis of Variance
+
+<hr> </hr>
+
+### Read More
+
+MANOVA is ANOVA with more than one response variable.
+
+
+[Example here](https://www.statmethods.net/stats/anova.html)
+
+[Read more]()
+
+[Presentation]()
+
+<hr> </hr>
+
+# Analysis
+
+## Load Packages
+```{r load packages, echo = TRUE}
+library(tidyverse)
+library(mvnormtest)
+```
+
+
+## Get Data
+We can load data from a csv file, such as:
+```{r load data, echo = TRUE}
+(datm = read.csv('data/ch08p26-manova.csv', header = TRUE, stringsAsFactors = FALSE))
+```
+
+
+
+## Descriptive Statistics
+
+```{r descriptives}
+datm_long <- gather(datm, responsevar, thedata, c('tensile', 'cof', 'bubble'), factor_key=TRUE)
+
+datm_long %>% 
+  group_by(responsevar) %>% 
+  summarize(mean = mean(thedata),
+            median = median(thedata),
+            stdev = sd(thedata),
+            min = min(thedata),
+            max = max(thedata)
+  )
+```
+
+
+## MANOVA
+
+This example uses a factorial design (2 factor, 2 level) DOE.
+
+### Fit the model
+
+```{r fit manova, echo = TRUE}
+# 2x2 Factorial MANOVA with 3 Dependent Variables. 
+fitm <- manova(cbind(tensile, cof, bubble) ~ time*pressure, data = datm)
+summary(fitm, test="Pillai")
+# can also use "Wilks", "Hotelling-Lawley", and "Roy""
+```
+
+### Univariate ANOVA results for each response variable
+
+```{r univariate anova results}
+summary.aov(fitm)
+```
+
+## Univariate ANOVA
+
+### ANOVA for tensile
+
+```{r anova tensile}
+fit_tensile = aov(tensile ~ time*pressure, data = datm)
+summary(fit_tensile)
+```
+
+Plot ANOVA for tensile
+```{r plot anova tensile}
+plot(fit_tensile)
+```
+
+TukeyHSD
+```{r tukey tensile}
+TukeyHSD(aov(tensile ~ factor(time)*factor(pressure), data = datm)) 
+```
+
+
+### ANOVA for cof
+
+```{r anova cof}
+fit_cof = aov(cof ~ factor(time)*factor(pressure), data = datm)
+summary(fit_cof)
+```
+
+
+Plot ANOVA for cof
+```{r plot anova cof}
+plot(fit_cof)
+```
+
+TukeyHSD
+```{r tukey cof}
+TukeyHSD(aov(cof ~ factor(time)*factor(pressure), data = datm)) 
+```
+
+
+### ANOVA for bubble
+
+```{r anova bubble}
+fit_bubble = aov(bubble ~ time*pressure, data = datm)
+summary(fit_bubble)
+```
+
+
+Plot ANOVA for bubble
+```{r plot anova bubble}
+plot(fit_bubble)
+```
+
+TukeyHSD
+```{r tukey bubble}
+TukeyHSD(aov(bubble ~ factor(time)*factor(pressure), data = datm)) 
+```
+
+
+## End
