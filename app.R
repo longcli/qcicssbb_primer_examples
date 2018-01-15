@@ -78,6 +78,11 @@ ui <- dashboardPage(
               menuItem("MANOVA",
                        tabName = "manova",
                        icon = icon("th")
+                       ),
+              
+              menuItem("Hypothesis Testing Overview",
+                       tabName = "hypothtest",
+                       icon = icon("th")
                        )
               
               )  # end menuItem Examples
@@ -128,6 +133,10 @@ ui <- dashboardPage(
       
       tabItem(tabName = "manova",
               uiOutput("manova_markdown")
+      ),
+      
+      tabItem(tabName = "hypothtest",
+              uiOutput("hypothtest_markdown")
       )
     
     )  # end tabItems
@@ -176,6 +185,10 @@ server <- function(input, output, session){
   
   output$manova_markdown <- renderUI({
     includeHTML("ch08p26_manova.html")
+  })
+  
+  output$hypothtest_markdown <- renderUI({
+    includeHTML("ch08p28_hypothtest.html")
   })
 
 }

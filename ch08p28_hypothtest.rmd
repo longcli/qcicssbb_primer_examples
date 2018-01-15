@@ -1,0 +1,32 @@
+---
+title: "CH08P26 Hypothesis Testing Overview"
+author: "crl"
+date: "January 14, 2018"
+output: html_document
+---
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# QCI Six Sigma Primer
+## Hypothesis Testing Overview
+
+<hr> </hr>
+
+[Statistical Inference](https://docs.google.com/presentation/d/e/2PACX-1vS0ZRPvHmO8-VJUd7eh_Dd46Uq5Qbyi_seB21ipzY0awXQ5rkCzqjuVWxnIRu1ZEOIhmDOcm-Ml9PlC/pub?start=false&loop=false&delayms=10000)
+
+[Hypothesis Testing Overview](https://docs.google.com/presentation/d/e/2PACX-1vRUer-9nN3oLHX-hrdgW4jg5obFxp4otNxnCla8KNCXFd7L87kgxpLAQQczxE5QA7dSOE75QTI9hL5R/pub?start=false&loop=false&delayms=10000)
+
+[Confidence Intervals](https://docs.google.com/presentation/d/e/2PACX-1vQzYaqLuti-qGlypIl87tgBvzXTW3SZ9NEgwsGWn5nnImMw5auFjH1AAAlHw2NqgIQjSKQGSt7SAqec/pub?start=false&loop=false&delayms=10000)
+
++ [Online Demo CI](https://crlstatistics.shinyapps.io/confidence_intervals_demo/)
+
+[Central Limit Theorem](https://docs.google.com/presentation/d/e/2PACX-1vR-kH9cV4KMWAYlEUfD0MozpnL2xDnD9k4R4udIFZIwJSsrbE5JApRs67VsclGkK6AfabeOVQ6cauO0/pub?start=false&loop=false&delayms=10000)
+
++ [Online Demo CLT]( https://crlstatistics.shinyapps.io/central_limit_theorem_demo/)
+
+<hr> </hr>
+
+
+## End
