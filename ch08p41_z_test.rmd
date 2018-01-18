@@ -1,0 +1,59 @@
+---
+title: "CH87P41 Z Test"
+author: "crl"
+date: "January 17, 2018"
+output: html_document
+---
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# QCI Six Sigma Primer
+## Z Test
+
+## Load Packages
+```{r load packages, echo = TRUE}
+# no packages
+```
+
+
+
+## Prepare data
+```{r set data, echo = TRUE}
+mu_0 <- 5
+sd_pop <- 0.12
+
+new_x <- c(5.10, 4.90, 4.92, 4.87, 5.09, 4.89, 4.95, 4.88)
+nx <- length(new_x)
+```
+
+## Create box plot by group using ggplot2.
+```{r boxplot ggplot, echo = TRUE}
+z_calc <- (mean(new_x) - mu_0) / (sd_pop/sqrt(nx))
+
+cat(paste("Calculated value of Z = ", round(z_calc, 4)))
+```
+
+The critical value of Z for alpha = 0.05
+
+```{r Z critical, echo = TRUE}
+confint = 0.95
+alpha = 1 - confint
+
+z_critical <- round(qnorm(p = alpha), 4)
+
+cat(paste("alpha = ", alpha))
+cat(paste("\nZ_critical = ", z_critical))
+```
+
+```{r plot norm, echo = TRUE}
+xq = seq(-4, 4, by = 0.01)
+plot(x = xq, y = dnorm(x = xq), col = 'blue', type = 'l')
+abline(v = z_critical, col = 'red', lty = 2)
+abline(v = z_calc)
+title('Normal Curve with Z critical (red) and Z calculated (black)')
+```
+
+
+## End

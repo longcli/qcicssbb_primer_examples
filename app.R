@@ -83,6 +83,11 @@ ui <- dashboardPage(
               menuItem("Hypothesis Testing Overview",
                        tabName = "hypothtest",
                        icon = icon("th")
+                       ),
+              
+              menuItem("Z Test",
+                       tabName = "ztest",
+                       icon = icon("th")
                        )
               
               )  # end menuItem Examples
@@ -137,6 +142,10 @@ ui <- dashboardPage(
       
       tabItem(tabName = "hypothtest",
               uiOutput("hypothtest_markdown")
+      ),
+      
+      tabItem(tabName = "ztest",
+              uiOutput("ztest_markdown")
       )
     
     )  # end tabItems
@@ -191,6 +200,10 @@ server <- function(input, output, session){
     includeHTML("ch08p28_hypothtest.html")
   })
 
+  output$ztest_markdown <- renderUI({
+    includeHTML("ch08p41_z_test.html")
+  })
+  
 }
 
 
