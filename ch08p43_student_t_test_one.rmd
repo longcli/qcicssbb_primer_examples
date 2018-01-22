@@ -1,0 +1,175 @@
+---
+title: "CH08P43 Student t Test One Sample"
+author: "crl"
+date: "January 21, 2018"
+output: html_document
+---
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# QCI Six Sigma Primer
+## Student t Test One Sample
+
+<hr> </hr>
+
+### Read More
+
+Where the population variance is not known, a Student's t-test is used to compare means.  
+The One Sample Student t Test is used to compare a sample mean to a target value. 
+
+[Student t Test Wikipedia](https://en.wikipedia.org/wiki/Student%27s_t-test#One-sample_t-test)
+
+[One Sample Student t Test Wikipedia](https://en.wikipedia.org/wiki/Student%27s_t-test#One-sample_t-test)
+
+
+
+The One Sample t-Test compares a sample mean to a known or hypothesized mean.
+[Example here](https://www.statmethods.net/stats/ttest.html)
+
+[Read more (Berkeley)](https://statistics.berkeley.edu/computing/r-t-tests)
+
+[Presentation](https://docs.google.com/presentation/d/e/2PACX-1vQHzYZ-PB8lu0ViBuok34ltHeuz4tihqMDNHvRccPIa6bDfZXEvzys3aoBWe7quW6wkEU07tRto4-L8/pub?start=false&loop=false&delayms=10000)
+
+<hr> </hr>
+
+# Analysis
+
+## Load Packages
+```{r load packages, echo = TRUE}
+library(dplyr)
+```
+
+
+## Primer Example with summarized data provided
+
+```{r calculate t, echo = TRUE}
+# historical mean yield
+mu0 <- 880
+
+# sample data
+ssize <- 25
+mean_yield <- 900  # sample mean (given in text)
+sstdev <- 20  # sample standard deviation (given in text)
+sstderr <- sstdev/sqrt(ssize)  # standard error of the mean
+
+# calculated value of Student t
+tcalc <- (mean_yield - mu0)/(sstderr)
+
+alpha <- 0.05
+
+# for a two-sided hypothesis test use alpha/2
+tcrit_lower = round(qt(p = alpha/2, df = ssize - 1), 3)
+tcrit_upper = round(qt(p = (1 - alpha/2), df = ssize - 1), 3)
+
+if (tcalc < tcrit_lower | tcalc > tcrit_upper){
+  cat("t calculated is greater than abs(t critical) therefore REJECT H0")
+} else {
+  cat("t calculated is less than abs(t critical) therefore FAIL TO REJECT H0")
+}
+```
+
+```{r plot student t results, echo = TRUE}
+# create a plot showing the outcome
+xq <- seq(-6, 6, by = 0.01)  # the 'quantiles' (x values)
+xp <- dt(x = xq, df = ssize - 1)  # the distribution (y values)
+
+plot(x = xq, y = xp, type = 'l', 
+     xlab = 'Quantiles', ylab = 'Distribution (probability)')
+title(main = 'Student t Distribution')
+
+# plots the critical t value based on degrees of freedom (df = sample size - 1)
+abline(v = tcalc, lty = 2, col = 'red')
+
+# plots the calculate t value
+abline(v = c(tcrit_lower, tcrit_upper), lty = 2, col = 'darkgreen')
+
+# add a legend
+legend("topleft", legend=c("Critical t values", "Calculated t value"),
+       col=c("darkgreen", "red"), lty = 2, cex=0.6)
+```
+
+<hr> </hr>
+
+
+## Example with simulated data
+
+Why create simulated data?
+Most experiments result in raw data to be used in the analysis.  We create
+simulated data for this example to show how the analysis works with raw (unsummarized) data.
+
+
+### Simulate data
+We use the 'set.seed' function affects the random number generation.  We use it 
+within a loop for reproducability.  
+The loop runs through each seed, creates a random normal sample with specified
+mean and standard deviation.  The sample mean and sample standard deviation are
+calculated for that iteration and stored in a dataframe.  
+When the loop is finished the absolute distance of each sample statistic from the
+desired value is calculated and summed.  We then look for the minimum value of 
+this sum (deviation).  
+
+```{r simulate data, echo = TRUE}
+mu_x0 <- 900
+sd_x0 <- 20
+
+# empty dataframe to collect results
+rslt <- data.frame(i = as.numeric(), dtot = as.numeric())
+
+# loop through seeds for RNG
+for (loop_i in 1:1000){
+  
+  set.seed(loop_i); x <- rnorm(25, mean = mu_x0, sd = sd_x0); 
+  mx <- mean(x) 
+  sx <- sd(x)
+  
+  diff_m <- abs(mx - mu_x0)
+  diff_s <- abs(sx - sd_x0)
+  
+  diff_tot <- diff_m + diff_s
+  
+  rslt[loop_i, 'i'] <- loop_i
+  rslt[loop_i, 'dtot'] <- diff_tot
+  
+}
+```
+
+Order by decreasing absolute difference.
+```{r order sim data, echo = TRUE}
+rslt <- rslt %>% mutate(absdif = abs(dtot - 0)) # somewhat redundant, but can use if diff target <> 0
+rslt <- arrange(rslt, absdif)
+```
+
+Plot the result of the data simulation.
+```{r plot the result of the simulation}
+plot(rslt$absdif)
+abline(h = rslt[1, 'absdif'], lty = 2, col = 'red')
+abline(v = 1, lty = 2, col = 'red')
+```
+
+Look at simulated differences.
+```{r review simulated diff}
+head(rslt)
+```
+
+Which seed to use?  The one that minimizes the difference from the desired sample statistics.
+```{r which seed}
+cat("Value fed to set.seed = ", rslt[1,1])
+```
+
+Get the simulated data for the example.
+```{r get simulated data, echo = TRUE}
+set.seed(rslt[1,1]); samplex = rnorm(25, mean = mu_x0, sd = sd_x0); mean(x); sd(x)
+cat(paste('simulated mean', round(mean(x), 2), '\n'))
+cat(paste('simulated sd', round(sd(x), 3)))
+```
+
+### Now we perform the one sample t test in R using the simulated sample data.  
+The critical values (two-sided) of t remain the same as above.  
+Look at both the p-value and the confidence interval of the sample mean.  
+```{r student t test one sample raw data, echo = TRUE}
+t.test(samplex, mu = 880, alternative = "two.sided") # H0: mu = 880
+```
+
+## End

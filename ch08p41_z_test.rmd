@@ -1,5 +1,5 @@
 ---
-title: "CH87P41 Z Test"
+title: "CH08P41 Z Test"
 author: "crl"
 date: "January 17, 2018"
 output: html_document
@@ -17,7 +17,14 @@ knitr::opts_chunk$set(echo = TRUE)
 # no packages
 ```
 
+## About the Z test
+The Z test is used when the population variance is known.  It is often used for 
+the one-sample location test comparing the mean of a set of measurements to a 
+given constant. 
 
+[Z test Wikipedia](https://en.wikipedia.org/wiki/Z-test)
+
+Where the population variance is not known, a Student's t-test is used.
 
 ## Prepare data
 ```{r set data, echo = TRUE}
