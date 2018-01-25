@@ -1,0 +1,159 @@
+---
+title: "CH08P44 Student t Test One Sample"
+author: "crl"
+date: "January 24, 2018"
+output: html_document
+---
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# QCI Six Sigma Primer
+## Student t Test One Sample (page VIII-44)
+
+<hr> </hr>
+
+### Read More
+
+Where the population variance is not known, a Student's t-test is used to compare means.  
+The One Sample Student t Test is used to compare a sample mean to a target value. 
+
+[Student t Test Wikipedia](https://en.wikipedia.org/wiki/Student%27s_t-test#One-sample_t-test)
+
+[One Sample Student t Test Wikipedia](https://en.wikipedia.org/wiki/Student%27s_t-test#One-sample_t-test)
+
+
+
+The One Sample t-Test compares a sample mean to a known or hypothesized mean.
+[Example here](https://www.statmethods.net/stats/ttest.html)
+
+[Read more (Berkeley)](https://statistics.berkeley.edu/computing/r-t-tests)
+
+[Presentation](https://docs.google.com/presentation/d/e/2PACX-1vQHzYZ-PB8lu0ViBuok34ltHeuz4tihqMDNHvRccPIa6bDfZXEvzys3aoBWe7quW6wkEU07tRto4-L8/pub?start=false&loop=false&delayms=10000)
+
+<hr> </hr>
+
+# Analysis
+
+## Load Packages
+```{r load packages, echo = TRUE}
+library(tidyverse)
+```
+
+
+## Primer Example 8.15
+
+Prepare the data set
+
+```{r, prepare data}
+dat_wear <- c(0.0058, 0.0049, 0.0052, 0.0044, 0.0050, 0.0047)
+```
+
+
+### Now we perform the one sample t test 
+
+The historical mean = 0.0055  (what we compare the sample mean against)  
+alpha = 0.05
+
+The question asks "is the new design 'better'?"  This is the **research hypothesis**.
+
+* By 'better' we might assume this means *LESS* wear.
+* The new sample mean is *LESS THAN* the historical mean.
+
+The **null hypothesis** would then be the 'status quo'
+
+* aka 'no improvement',
+* aka 'not better (but possibly the same as or worse)'
+* aka *EQUAL OR MORE* wear.
+
+H0: new mean >= historical mean  
+HA: new mean < historical mean  
+
+
+Plot the sample data 
+```{r, plot data}
+histavg <- 0.0055
+df_wear <- data.frame(values = c(dat_wear, histavg), 
+                      group = c(rep('sample', length(dat_wear)), 'historical average'))
+
+ggplot(df_wear, aes(x = group, y = values, color = group)) + 
+  geom_boxplot() +
+  ggtitle('Plot of data')
+
+```
+
+With a one-sided hypothesis, we put all of alpha into one tail, which affects
+the critical value of t that defines the rejection region.
+
+The critical value (one-sided) of t with (n-1) degrees of freedom.
+```{r, t critical}
+hypalpha <- 0.05
+degf <- length(dat_wear) - 1
+tcrit <- round(qt(p = hypalpha, df = degf), 3)
+cat(paste('Critical value of t =', tcrit, 'with degrees of freedom =', degf))
+```
+
+Look at both the p-value of the t-test and the confidence interval of the sample mean.  
+
+```{r student t test one sample raw data, echo = TRUE}
+tcalc_out <- t.test(dat_wear, mu = histavg, alternative = "less") 
+tcalc <- tcalc_out$statistic
+tcalc_out
+```
+
+We see that the p-value from the t-test (0.0050) is less than alpha (0.05).  
+
+* Therefore, we REJECT H0 (null hypothesis).  
+* There is evidence supporting the conclusion that the new sample mean is less 
+than the historical mean.  
+
+The 95% (1-alpha) confidence interval of the sample mean is less than the historical mean.  
+
+Drawing conclusions
+
+```{r, ttest conclusion}
+if (tcalc < tcrit){
+  cat("t calculated is greater than abs(t critical) therefore REJECT H0")
+} else {
+  cat("t calculated is less than abs(t critical) therefore FAIL TO REJECT H0")
+}
+```
+
+Graphical representation of t-test result
+
+```{r plot student t results, echo = TRUE}
+# create a plot showing the outcome
+xq <- seq(-6, 6, by = 0.01)  # the 'quantiles' (x values)
+xp <- dt(x = xq, df = degf)  # the distribution (y values)
+
+plot(x = xq, y = xp, type = 'l', 
+     xlab = 'Quantiles', ylab = 'Distribution (probability)')
+title(main = 'Student t Distribution')
+
+# plots the critical t value based on degrees of freedom (df = sample size - 1)
+abline(v = tcalc, lty = 2, col = 'red')
+
+# plots the calculate t value
+abline(v = tcrit, lty = 2, col = 'darkgreen')
+
+# add a legend
+legend("topleft", legend=c("Critical t values", "Calculated t value"),
+       col=c("darkgreen", "red"), lty = 2, cex=0.6)
+```
+
+
+
+Means plot
+```{r, means plot}
+library(gplots)
+# Plot the mean of teeth length by dose groups
+plotmeans(values ~ group, p = 0.95, data = df_wear, main = "Plot of means and 95% confidence intervals")
+```
+
+
+
+
+
+
+## End

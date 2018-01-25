@@ -9,7 +9,9 @@ ui <- dashboardPage(
   dashboardHeader(title = "QCI CSSBB Primer R Examples"),
   
   dashboardSidebar(
-
+    
+    width = 300, 
+    
     sidebarMenu(
 
      menuItem("Overview", 
@@ -90,8 +92,13 @@ ui <- dashboardPage(
                        icon = icon("th")
                        ),
               
-              menuItem("One Sample Student t Test",
-                       tabName = "ttest_one",
+              menuItem("One Sample Student t Test Page 43",
+                       tabName = "ttest_one_43",
+                       icon = icon("th")
+              ),
+              
+              menuItem("One Sample Student t Test Page 44",
+                       tabName = "ttest_one_44",
                        icon = icon("th")
               )
               
@@ -153,8 +160,12 @@ ui <- dashboardPage(
               uiOutput("ztest_markdown")
       ),
       
-      tabItem(tabName = "ttest_one",
-              uiOutput("ttest_one_markdown")
+      tabItem(tabName = "ttest_one_43",
+              uiOutput("ttest_one_43_markdown")
+      ),
+      
+      tabItem(tabName = "ttest_one_44",
+              uiOutput("ttest_one_44_markdown")
       )
     
     )  # end tabItems
@@ -213,8 +224,12 @@ server <- function(input, output, session){
     includeHTML("ch08p41_z_test.html")
   })
   
-  output$ttest_one_markdown <- renderUI({
+  output$ttest_one_43_markdown <- renderUI({
     includeHTML("ch08p43_student_t_test_one.html")
+  })
+  
+  output$ttest_one_44_markdown <- renderUI({
+    includeHTML("ch08p44_student_t_test_one.html")
   })
   
 }
