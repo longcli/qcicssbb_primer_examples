@@ -100,6 +100,11 @@ ui <- dashboardPage(
               menuItem("One Sample Student t Test Page 44",
                        tabName = "ttest_one_44",
                        icon = icon("th")
+              ),
+              
+              menuItem("Chi Square Test for Association Page 50",
+                       tabName = "chisqtest_50",
+                       icon = icon("th")
               )
               
               )  # end menuItem Examples
@@ -166,6 +171,10 @@ ui <- dashboardPage(
       
       tabItem(tabName = "ttest_one_44",
               uiOutput("ttest_one_44_markdown")
+      ),
+      
+      tabItem(tabName = "chisqtest_50",
+              uiOutput("chisqtest_50_markdown")
       )
     
     )  # end tabItems
@@ -230,6 +239,10 @@ server <- function(input, output, session){
   
   output$ttest_one_44_markdown <- renderUI({
     includeHTML("ch08p44_student_t_test_one.html")
+  })
+  
+  output$chisqtest_50_markdown <- renderUI({
+    includeHTML("ch08p50_chisq_test_assoc.html")
   })
   
 }

@@ -8,6 +8,11 @@ output: html_document
 
 # Concept Demonstration Apps
 
+## Why Stats?
+
+[Why Stats Overview](https://docs.google.com/presentation/d/1ZD1Dft8GEwM2TXlxoSiwRazVdRtWxMUZ-LX2D-hQcTo/edit?usp=sharing)
+
+
 ## Central Limit Theorem
 
 [Central Limit Theorem](https://crlstatistics.shinyapps.io/central_limit_theorem_demo/)
