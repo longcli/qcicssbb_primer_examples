@@ -145,6 +145,16 @@ legend("topright", legend=c("Critical chi square values", "Calculated chi square
 ```
 
 
+### What does the chi-square density look like for different degrees of freedom?
+
+```{r, various chisq, echo = TRUE}
+layout(matrix(c(1,2,3,4,5,6), 3, 2, byrow = TRUE)) 
+for (i in 1:6) plot( 
+  dchisq(1:qchisq(p = 0.999, df = i*2), i*2), 
+  main = paste("chi-square density, df =", i*2),
+  ylab = 'Chi-Square Density',
+  type = 'l') 
+```
 
 
 
