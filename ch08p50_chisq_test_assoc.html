@@ -210,7 +210,7 @@ degf &lt;- (nrow(tbl_radio) - 1) * (ncol(tbl_radio) - 1)
 chisqcrit &lt;- round(qchisq(p = hypalpha, df = degf, lower.tail = FALSE), 3)
 cat(paste('Critical value (right tail) of chisq =', chisqcrit, 'with degrees of freedom =', degf))</code></pre>
 <pre><code>## Critical value (right tail) of chisq = 5.991 with degrees of freedom = 2</code></pre>
-<p>Look at both p-value of the chi square test.</p>
+<p>Look at the p-value of the chi square test.</p>
 <pre class="r"><code>(chisqcalc_out &lt;- chisq.test(tbl_radio))</code></pre>
 <pre><code>## 
 ##  Pearson's Chi-squared test
@@ -226,12 +226,12 @@ cat(paste('Critical value (right tail) of chisq =', chisqcrit, 'with degrees of 
 </ul>
 <p>Drawing conclusions</p>
 <pre class="r"><code>if (chisqcalc &lt; chisqcrit){
-  cat(&quot;chi square calculated is greater than chisquare critical therefore REJECT H0&quot;)
-} else {
   cat(&quot;chi square calculated is less than chi square critical therefore FAIL TO REJECT H0&quot;)
+} else {
+  cat(&quot;chi square calculated is greater than chisquare critical therefore REJECT H0&quot;)
 }</code></pre>
-<pre><code>## chi square calculated is greater than chisquare critical therefore REJECT H0</code></pre>
-<p>Graphical representation of t-test result</p>
+<pre><code>## chi square calculated is less than chi square critical therefore FAIL TO REJECT H0</code></pre>
+<p>Graphical representation of chi square test result.</p>
 <pre class="r"><code># create a plot showing the outcome
 xq &lt;- seq(0, qchisq(p = 0.999, df = degf), by = 0.01)  # the 'quantiles' (x values)
 xp &lt;- dchisq(x = xq, df = degf)  # the distribution (y values)

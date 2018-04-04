@@ -98,7 +98,7 @@ chisqcrit <- round(qchisq(p = hypalpha, df = degf, lower.tail = FALSE), 3)
 cat(paste('Critical value (right tail) of chisq =', chisqcrit, 'with degrees of freedom =', degf))
 ```
 
-Look at both p-value of the chi square test.  
+Look at the p-value of the chi square test.  
 
 ```{r chisq test, echo = TRUE}
 (chisqcalc_out <- chisq.test(tbl_radio))
@@ -116,13 +116,13 @@ Drawing conclusions
 
 ```{r, chisqtest conclusion}
 if (chisqcalc < chisqcrit){
-  cat("chi square calculated is greater than chisquare critical therefore REJECT H0")
-} else {
   cat("chi square calculated is less than chi square critical therefore FAIL TO REJECT H0")
+} else {
+  cat("chi square calculated is greater than chisquare critical therefore REJECT H0")
 }
 ```
 
-Graphical representation of t-test result
+Graphical representation of chi square test result.
 
 ```{r plot chisq results, echo = TRUE}
 # create a plot showing the outcome
