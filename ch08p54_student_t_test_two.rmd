@@ -1,0 +1,223 @@
+---
+title: "CH08P54 Student t Test Two Sample"
+author: "crl"
+date: "April 9, 2018"
+output: html_document
+---
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# QCI Six Sigma Primer
+## Student t Test Two Sample
+
+<hr> </hr>
+
+### Overview
+
+The _Independent Samples Student's t-test_ is used to compare sample means between two groups.  
+
+* The data in the two samples are independent.  
+
+
+The _Dependent (Paired) Samples t-test_ is used to compare means when the samples are not independent.
+
+* Pre- and Post- test results.  
+* Beginning and Ending blood pressure for each person in a group.  
+* In DOE terms, the paired t-test is a randomized block design.  
+* The paired t-test can also be viewed as a repeated measures design.  
+
+
+### Read More
+
+[Student t Test Wikipedia](https://en.wikipedia.org/wiki/Student's_t-test)  
+
+[Independent Samples Student t Test Wikipedia](https://en.wikipedia.org/wiki/Student's_t-test#Independent_two-sample_t-test)  
+
+[Dependent Samples (Paired) Student t Test Wikipedia](https://en.wikipedia.org/wiki/Student's_t-test#Dependent_t-test_for_paired_samples)  
+
+[Examples here](https://www.statmethods.net/stats/ttest.html)  
+
+[Read more (Berkeley)](https://statistics.berkeley.edu/computing/r-t-tests)  
+
+[Presentation](https://docs.google.com/presentation/d/e/2PACX-1vQHzYZ-PB8lu0ViBuok34ltHeuz4tihqMDNHvRccPIa6bDfZXEvzys3aoBWe7quW6wkEU07tRto4-L8/pub?start=false&loop=false&delayms=10000)  
+
+<hr> </hr>
+
+# Analysis
+
+## Load Packages
+```{r load packages, echo = TRUE}
+library(dplyr)
+```
+
+
+
+## Primer Example 
+
+### Prepare the data set.
+
+```{r, prepare data}
+(dat <- read.csv("data/ch08p54-two-sample-t-test.csv", stringsAsFactors = FALSE))
+
+# note that we set first column in the csv file as row names in the dataframe
+```
+
+
+## t-test assuming equal variances, equal sample sizes
+
+### Perform the two-sample t-test
+```{r calculate t equal, echo = TRUE}
+setalpha = 0.05
+
+(ttest_out_equal <- t.test(weight ~ machine, 
+                           data = dat, 
+                           alternative = "two.sided", 
+                           var.equal = TRUE, 
+                           conf.level = 1-setalpha))
+```
+
+
+Look at the structure of the R output for t-test
+```{r, structure of ttest output}
+str(ttest_out_equal)
+```
+
+
+### Look at the outcome of the t-test.  
+
+```{r, t-test equal}
+# calculated value of Student t
+tcalc_eq <- ttest_out_equal$statistic
+
+degf_equal <- ttest_out_equal$parameter
+
+# for a two-sided hypothesis test use alpha/2
+tcrit_lower_eq = round(qt(p = setalpha/2, df = degf_equal), 3)
+tcrit_upper_eq = round(qt(p = (1 - setalpha/2), df = degf_equal), 3)
+
+cat("degrees of freedom = ", degf_equal)
+cat("\nt critical = ", abs(min(tcrit_lower_eq, tcrit_upper_eq)))
+cat("\nt calculated = ", tcalc_eq)
+
+if (tcalc_eq < tcrit_lower_eq | tcalc_eq > tcrit_upper_eq){
+  cat("\nt calculated is greater than abs(t critical) therefore REJECT H0")
+} else {
+  cat("\nt calculated is less than abs(t critical) therefore FAIL TO REJECT H0")
+}
+```
+
+### Plot the results.
+
+```{r plot student t results, echo = TRUE}
+# create a plot showing the outcome
+xq <- seq(-6, 6, by = 0.01)  # the 'quantiles' (x values)
+xp <- dt(x = xq, df = degf_equal)  # the distribution (y values)
+
+plot(x = xq, y = xp, type = 'l', 
+     xlab = 'Quantiles', ylab = 'Distribution (probability)')
+title(main = 'Student t Distribution')
+
+# add right tail shaded area under normal curve for rejection region
+polygon(c( xq[xq >= tcrit_upper_eq], tcrit_upper_eq ),  c(xp[xq >= tcrit_upper_eq], 0 ), col="red")
+
+# add left tail shaded area under normal curve for rejection region
+polygon(c( xq[xq <= tcrit_lower_eq], tcrit_lower_eq ),  c(xp[xq <= tcrit_lower_eq], 0 ), col="red")
+
+# plots the critical t value based on degrees of freedom (df = sample size - 1)
+abline(v = tcalc_eq, lty = 2, col = 'darkgreen')
+
+# plots the calculate t value
+abline(v = c(tcrit_lower_eq, tcrit_upper_eq), lty = 2, col = 'red')
+
+# add a legend
+legend("topleft", legend=c("Critical t values", "Calculated t value"),
+       col=c("red", "darkgreen"), lty = 2, cex=0.6)
+```
+
+
+
+## t-test assuming UNequal variances, equal sample sizes
+
+### Perform the two-sample t-test
+```{r calculate t unequal, echo = TRUE}
+(ttest_out_unequal <- t.test(weight ~ machine, 
+                             data = dat, 
+                             alternative = "two.sided", 
+                             var.equal = FALSE, 
+                             conf.level = 1-setalpha))
+```
+
+
+### Look at the outcome of the t-test.  
+
+```{r, t-test unequal}
+# calculated value of Student t
+tcalc_uneq <- ttest_out_unequal$statistic
+
+degf_unequal <- ttest_out_unequal$parameter
+
+# for a two-sided hypothesis test use alpha/2
+tcrit_lower_uneq = round(qt(p = setalpha/2, df = degf_unequal), 3)
+tcrit_upper_uneq = round(qt(p = (1 - setalpha/2), df = degf_unequal), 3)
+
+cat("degrees of freedom = ", degf_unequal)
+cat("\nt critical = ", abs(min(tcrit_lower_uneq, tcrit_upper_uneq)))
+cat("\nt calculated = ", tcalc_uneq)
+
+if (tcalc_uneq < tcrit_lower_uneq | tcalc_uneq > tcrit_upper_uneq){
+  cat("\nt calculated is greater than abs(t critical) therefore REJECT H0")
+} else {
+  cat("\nt calculated is less than abs(t critical) therefore FAIL TO REJECT H0")
+}
+```
+
+
+### What's the difference?
+
+One difference is the degrees of freedom for the equal variance case vs. 
+the unequal variance case.  The degrees of freedom for the unequal variance case 
+(in this exercise) are lower, leading to a larger critical value for t (a 
+smaller rejection region).
+
+
+
+## Paired t-test assuming dependent samples
+
+### Perform the paired t-test
+```{r calculate t paired, echo = TRUE}
+(ttest_out_paired <- t.test(weight ~ machine, 
+                            data = dat, 
+                            paired = TRUE, 
+                            alternative = "two.sided", 
+                            conf.level = 1-setalpha))
+```
+
+
+### Look at the outcome of the paired t-test.  
+
+```{r, t-test paired}
+# calculated value of Student t
+tcalc_paired <- ttest_out_paired$statistic
+
+degf_paired <- ttest_out_paired$parameter
+
+# for a two-sided hypothesis test use alpha/2
+tcrit_lower_paired = round(qt(p = setalpha/2, df = degf_paired), 3)
+tcrit_upper_paired = round(qt(p = (1 - setalpha/2), df = degf_paired), 3)
+
+cat("degrees of freedom = ", degf_paired)
+cat("\nt critical = ", abs(min(tcrit_lower_paired, tcrit_upper_paired)))
+cat("\nt calculated = ", tcalc_paired)
+
+if (tcalc_paired < tcrit_lower_paired | tcalc_paired > tcrit_upper_paired){
+  cat("\nt calculated is greater than abs(t critical) therefore REJECT H0")
+} else {
+  cat("\nt calculated is less than abs(t critical) therefore FAIL TO REJECT H0")
+}
+```
+
+
+
+## End
