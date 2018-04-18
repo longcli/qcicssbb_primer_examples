@@ -110,6 +110,11 @@ ui <- dashboardPage(
               menuItem("Two Sample Student t Test Page 54-56",
                        tabName = "ttest_two_54",
                        icon = icon("th")
+              ),
+              
+              menuItem("F Test Page 59",
+                       tabName = "ftest_59",
+                       icon = icon("th")
               )
               
               )  # end menuItem Examples
@@ -184,6 +189,10 @@ ui <- dashboardPage(
     
       tabItem(tabName = "ttest_two_54",
               uiOutput("ttest_two_54_markdown")
+      ),
+      
+      tabItem(tabName = "ftest_59",
+              uiOutput("ftest_59_markdown")
       )
       
     )  # end tabItems
@@ -256,6 +265,10 @@ server <- function(input, output, session){
   
   output$ttest_two_54_markdown <- renderUI({
     includeHTML("ch08p54_student_t_test_two.html")
+  })
+  
+  output$ftest_59_markdown <- renderUI({
+    includeHTML("ch08p59_f_test.html")
   })
   
 }
