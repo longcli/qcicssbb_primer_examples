@@ -1,0 +1,141 @@
+---
+title: "CH08P59 F Test"
+author: "crl"
+date: "April 17, 2018"
+output: html_document
+---
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# QCI Six Sigma Primer
+## F Test
+
+<hr> </hr>
+
+### Overview
+
+The _F test_ is used to compare two variances.  
+
+* Recall that the Chi Square test can compare a sample variance to a known variance.  
+* The F test is commonly used in ANOVA
+
+
+
+### Read More
+
+[F Test Wikipedia](https://en.wikipedia.org/wiki/F-test)  
+
+[Examples here](http://www.sthda.com/english/wiki/f-test-compare-two-variances-in-r)  
+
+
+
+<hr> </hr>
+
+# Analysis
+
+## Load Packages
+```{r load packages, echo = TRUE}
+library(dplyr)
+```
+
+
+
+## Primer Example 
+
+### Prepare the data set.
+
+```{r, prepare data}
+# no data set
+# use simulated data
+d_start <- c(9768.774, 9417.665, 9207.392, 11558.438, 11143.268, 9919.113, 11303.002, 10977.100, 9723.487)
+d_oneyear <- c(9731.087, 9822.298, 9971.098, 10411.528, 10237.065, 9531.770, 9875.006)
+
+n_start <- length(d_start)
+n_oneyear <- length(d_oneyear)
+
+cat('n = ', length(d_start), 'std dev start = ', round(sd(d_start),0), '\n')
+cat('n = ', length(d_oneyear), 'std dev one year = ', round(sd(d_oneyear),0))
+```
+
+
+## F Test
+
+### Critical value of F
+```{r, F critical}
+setalpha <- 0.05
+
+fcrit <- qf(p = 1-setalpha, df1 = n_start-1, df2 = n_oneyear-1)
+
+cat('F critical = ', round(fcrit, 3))
+```
+
+
+
+### Perform the F test
+```{r, calculate F test, echo = TRUE}
+setalpha = 0.05
+
+(ftest_out <- var.test(x = d_start, y = d_oneyear))
+```
+
+
+Look at the structure of the R output for t-test
+```{r, structure of ftest output}
+str(ftest_out)
+```
+
+
+### Look at the outcome of the F test.  
+
+```{r, F test outcome}
+# calculated value of Student t
+fcalc <- ftest_out$statistic
+
+degf <- ftest_out$parameter
+
+# for a one-tailed hypothesis test use alpha
+# see calculations for F critical above
+
+cat("degrees of freedom = ", degf[1], 'and', degf[2])
+cat("\nF critical = ", round(fcrit, 3))
+cat("\nF calculated = ", round(fcalc, 3))
+
+if (fcrit < fcalc){
+  cat("\nF calculated is greater than F critical therefore REJECT H0")
+} else {
+  cat("\nF calculated is less than F critical therefore FAIL TO REJECT H0")
+}
+```
+
+### Plot the results.
+
+```{r, plot student tF test results, echo = TRUE}
+# create a plot showing the outcome
+xq <- seq(0, qf(p = 0.999, df1 = n_start-1, df2 = n_oneyear-1), by = 0.01)  # the 'quantiles' (x values)
+xp <- df(x = xq, df1 = degf[1], df2 = degf[2])  # the distribution (y values)
+
+plot(x = xq, y = xp, type = 'l', 
+     xlab = 'Quantiles', ylab = 'Distribution (probability)')
+title(main = 'F Distribution')
+
+# add right tail shaded area under normal curve for rejection region
+polygon(c( xq[xq >= fcrit], fcrit ),  c(xp[xq >= fcrit], 0 ), col="red")
+
+# plots the calculated F value based on degrees of freedom
+abline(v = fcalc, lty = 2, col = 'darkgreen')
+
+# plots the critical F value
+abline(v = fcrit, lty = 2, col = 'red')
+
+# add a legend
+legend("topright", legend=c("Critical F value", "Calculated F value"),
+       col=c("red", "darkgreen"), lty = 2, cex=0.6)
+```
+
+
+
+
+
+## End
