@@ -1,0 +1,357 @@
+---
+title: "CH08P63 One Way ANOVA"
+author: "crl"
+date: "April 24, 2018"
+output: html_document
+---
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# QCI Six Sigma Primer
+## One Way ANOVA
+
+<hr> </hr>
+
+### Overview
+
+_One Way ANOVA_ is used to compare means for three or more groups.  
+
+* Recall that the Student-t test compares means of two groups.  
+
+* Why not just use multiple t-tests between each pair of means?  
+    + Because each test has a Type 1 error (alpha, often 0.05).  
+    + If doing multiple comparisons each test has it's own Type 1 error.  
+    + Doing multiple tests inflates the Type 1 error across the experiment as a whole.  
+    + ANOVA can compensate for this.  
+
+
+Various types of ANOVA
+
+* One Way ANOVA - one factor with three or more groups.  
+
+* Two Way ANOVA - two factors, each with multiple groups.  
+
+* Factorial ANOVA - multiple factors, along with interaction terms.  
+
+
+Other Concepts
+
+* Fixed effects ANOVA (what most people know) - studies the differences in means  
+
+* Random effects ANOVA (and Mixed Effects) - studies components of variance  
+
+
+### Read More
+
+[One Way ANOVA Wikipedia](https://en.wikipedia.org/wiki/One-way_analysis_of_variance)  
+
+[One Way ANOVA NIST](https://www.itl.nist.gov/div898/handbook/ppc/section2/ppc231.htm)  
+
+[Examples here](http://www.sthda.com/english/wiki/one-way-anova-test-in-r)  
+
+[ANOVA assumptions STHDA](http://www.sthda.com/english/wiki/one-way-anova-test-in-r#check-anova-assumptions-test-validity)  
+
+[ANOVA assumptions Quick R](https://www.statmethods.net/stats/anovaAssumptions.html)  
+
+
+
+### More
+
+[One Way ANOVA Demo](https://crlstatistics.shinyapps.io/anova_demo/)  
+
+[Presentation](https://docs.google.com/presentation/d/1W4IdxwG_raXJ_NotgdwgyplsfShOQqOzJYarinLmMXw/edit?usp=sharing)  
+
+[Variance Partitioning](https://drive.google.com/file/d/1_JmnMcrZqlPW4glg7GvGE0u4b9Uwn0kK/view?usp=sharing)
+
+
+
+### ANOVA Hypotheses
+
+The null hypothesis H0 is that there is no difference between any of the sample means.  
+The alternate hypothesis HA is that there is a difference between at least two of the sample means.  
+
+
+<hr> </hr>
+
+# Analysis
+
+## Load Packages
+```{r load packages, echo = TRUE}
+library(tidyverse)
+library(car)
+library(lmtest)
+library(vrtest)
+```
+
+
+
+## Primer Example 
+
+### Prepare the data set.
+
+Often we use stringsAsFactors = FALSE.  
+In this case, with ANOVA, the categorical variable should be a factor, 
+therefore we use the default stringsAsFactors = TRUE.
+
+```{r, load data}
+dat <- read.csv('data/ch08p63-one-way-anova.csv')
+glimpse(dat)
+```
+
+## Look at the data
+
+```{r, boxplots}
+ggplot(data = dat, aes(x = machine, y = reading, color = machine)) + 
+  geom_boxplot()
+```
+
+From just a boxplot it is not always easy to know if sample means are different.  
+This is why we also use ANOVA.  
+
+
+## One Way ANOVA
+
+### Conducting the ANOVA analysis
+
+```{r, oneway anova}
+fit <- aov(reading ~ machine, data = dat)
+summary(fit)
+```
+
+
+The p-value [Pr(>F)] for 'machine' tells us if there is a difference between at 
+least two (or more) means. What it does not tell us is between which pairs of means 
+the difference(s) exist.  For this we can use contrasts or post-hoc tests.  
+
+Comparing results to the Primer:  
+
+* SST matches the R output (137.2)  
+
+* SSE matches the R output (24.8)  
+
+* F value for machine matches the R output (33.2)  
+
+* Degrees of Freedom match the R output (2, 12)  
+
+
+The critical value of F with df = (2, 12) at alpha = 0.05 is 3.89  
+The calculated value of F (33.2) is larger than F critical.  
+Therefore we reject H0 that there is no difference between any of the sample means.  
+
+
+### How can we find out where the differences exist?  
+
+[Stat Notes - ANOVA Post-Hoc Tests](https://drive.google.com/file/d/1hs32aXJ_Nqc0mBeE9qv1yvcTYwwfX8Bg/view?usp=sharing)
+
+
+
+```{r, posthoc}
+TukeyHSD(fit)
+```
+
+
+
+### Plot of means and confidence intervals
+
+```{r, means plot}
+# Mean plots
+# Plot weight by group
+# Add error bars: mean_se
+# (other values include: mean_sd, mean_ci, median_iqr, ....)
+library(ggpubr)
+ggline(dat, x = "machine", y = "reading", 
+       add = c("mean_se", "jitter"), 
+       order = c("A", "B", "C"),
+       ylab = "Reading", xlab = "Machine",
+       color = 'machine')
+```
+
+
+
+## Model Diagnostics  
+
+Testing the assumptions behind the ANOVA method.  
+
+
+
+Plot fitted vs residuals
+```{r, fitted vs resids}
+fitted.y = fit$fitted
+
+
+# plot residuals vs fitted
+plot(fitted.y, residuals(fit))
+title("Residuals vs Fitted Values")
+grid()
+```
+
+
+
+Normality diagnostics  
+
+Test normality using Shapiro-Wilks test 
+```{r, shapiro}
+res.shapiro = shapiro.test(residuals(fit))
+
+print(res.shapiro)
+
+if (res.shapiro$p.value < 0.05){
+  print("Nonnormally distributed residuals")} else {
+    print("Normally distributed residuals")
+  }
+```
+
+
+Normality plot of residuals  
+```{r, normality plot resids}
+qqPlot(residuals(fit), main = "Normal Plot of Residuals")
+```
+
+
+
+Family of influence measures  
+```{r, infl}
+infl.fit = influence.measures(fit)
+
+print(summary(infl.fit))
+
+id.infl = which(apply(infl.fit$is.inf, 1, any))
+
+print("Most influential observations:")
+print(id.infl)
+```
+
+
+
+Cook's Distance  
+```{r, cooks D}
+# find unusual Cooks Distance
+
+fit.cook = cooks.distance(fit)
+
+print("Influential Cooks D")
+print(which(fit.cook > 3*mean(fit.cook)))
+```
+
+
+
+Plot Cook's diagnostics  
+```{r, cooks D plot}
+fit.cook = cooks.distance(fit)
+
+id.c = which(fit.cook > 3*mean(fit.cook))
+
+# plot Cooks Distance
+plot(fit.cook)
+abline(h = c(1,3)*mean(fit.cook), col = 2)
+title("Cook's Distance")
+grid()
+
+if (length(id.c) > 0){ text(id.c, fit.cook[id.c], rownames(dat)[id.c], pos = 2, xpd = TRUE) }
+```
+
+
+Print studentized residuals diagnostics  
+```{r, student resids}
+# STUDENTIZED RESIDUALS
+fit.studres = rstudent(fit)
+
+print("Noteworthy studentized residuals")
+print(which(abs(fit.studres) > 3))
+```
+
+
+
+Plot studentized residuals diagnostics  
+```{r, student resids plot}
+fit.studres = rstudent(fit)
+
+id.sr = which(abs(fit.studres) > 3)
+
+# plot studentized residuals
+plot(rstudent(fit), ylim = c(-4,4))
+abline(h = c(-3,+3), col = 'red', lty = 3)
+title('Studentized Residuals')
+grid()
+
+
+if (length(id.sr) > 0){ text(id.sr, fit.studres[id.sr], rownames(dat)[id.sr], pos = 2, xpd = TRUE) }
+```
+
+
+Print leverage diagnostics  
+```{r, leverage}
+# LEVERAGE based on HAT MATRIX
+fit.hat = hatvalues(fit)
+
+print("Noteworthy leverage values")
+print(which(fit.hat > 3*mean(fit.hat)))
+```
+
+
+Plot leverage diagnostics  
+```{r, leverage plot}
+fit.hat = hatvalues(fit)
+
+id.h = which(fit.hat > 3*mean(fit.hat))
+
+
+# plot leverage
+plot(fit.hat)
+abline(h = c(1,3)*mean(fit.hat), col = 2)
+title('Leverage')
+grid()
+
+
+if (length(id.h) > 0){ text(id.h, fit.hat[id.h], rownames(dat)[id.h], pos = 2, xpd = TRUE) }
+```
+
+
+Print functional form diagnostics  
+```{r, functional form test}
+# test for functional form
+# conditional mean of residuals equal to zero
+# using the RESET test
+
+res.fform = resettest(fit)
+
+if (res.fform$p.value < 0.05){
+  print("Functional Form Misspecified [E(e|X) <> 0]")} else {
+    print("Functional Form Adequate [E(e|X) = 0]")
+  }
+```
+
+
+Print constant variance (of residuals) diagnostics  
+```{r, const var}
+# test for heteroskedasticity
+# using the Breusch-Pagan test
+
+res.bp = bptest(fit)
+res.bp$p.value
+
+if (res.bp$p.value < 0.05){
+  print("Residuals have NON-constant variance")} else {
+    print("Residuals have constant variance")
+  }
+```
+
+
+Levene's test for equal variances  
+```{r, levene}
+leveneTest(reading ~ machine, data = dat)
+```
+
+
+## Nonparametric alternative to One Way ANOVA
+
+### Kruskal-Wallis test
+
+```{r, kruskal}
+kruskal.test(reading ~ machine, data = dat)
+```
+
+
+## End
