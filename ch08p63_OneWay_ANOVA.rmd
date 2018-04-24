@@ -176,7 +176,7 @@ Testing the assumptions behind the ANOVA method.
 
 
 
-Plot fitted vs residuals
+### Plot fitted vs residuals
 ```{r, fitted vs resids}
 fitted.y = fit$fitted
 
@@ -189,7 +189,7 @@ grid()
 
 
 
-Normality diagnostics  
+### Normality diagnostics  
 
 Test normality using Shapiro-Wilks test 
 ```{r, shapiro}
@@ -211,7 +211,7 @@ qqPlot(residuals(fit), main = "Normal Plot of Residuals")
 
 
 
-Family of influence measures  
+### Family of influence measures  
 ```{r, infl}
 infl.fit = influence.measures(fit)
 
@@ -225,7 +225,7 @@ print(id.infl)
 
 
 
-Cook's Distance  
+### Cook's Distance  
 ```{r, cooks D}
 # find unusual Cooks Distance
 
@@ -237,7 +237,7 @@ print(which(fit.cook > 3*mean(fit.cook)))
 
 
 
-Plot Cook's diagnostics  
+### Plot Cook's diagnostics  
 ```{r, cooks D plot}
 fit.cook = cooks.distance(fit)
 
@@ -253,7 +253,7 @@ if (length(id.c) > 0){ text(id.c, fit.cook[id.c], rownames(dat)[id.c], pos = 2, 
 ```
 
 
-Print studentized residuals diagnostics  
+### Print studentized residuals diagnostics  
 ```{r, student resids}
 # STUDENTIZED RESIDUALS
 fit.studres = rstudent(fit)
@@ -264,7 +264,7 @@ print(which(abs(fit.studres) > 3))
 
 
 
-Plot studentized residuals diagnostics  
+### Plot studentized residuals diagnostics  
 ```{r, student resids plot}
 fit.studres = rstudent(fit)
 
@@ -281,7 +281,7 @@ if (length(id.sr) > 0){ text(id.sr, fit.studres[id.sr], rownames(dat)[id.sr], po
 ```
 
 
-Print leverage diagnostics  
+### Print leverage diagnostics  
 ```{r, leverage}
 # LEVERAGE based on HAT MATRIX
 fit.hat = hatvalues(fit)
@@ -291,7 +291,7 @@ print(which(fit.hat > 3*mean(fit.hat)))
 ```
 
 
-Plot leverage diagnostics  
+### Plot leverage diagnostics  
 ```{r, leverage plot}
 fit.hat = hatvalues(fit)
 
@@ -309,7 +309,7 @@ if (length(id.h) > 0){ text(id.h, fit.hat[id.h], rownames(dat)[id.h], pos = 2, x
 ```
 
 
-Print functional form diagnostics  
+### Print functional form diagnostics  
 ```{r, functional form test}
 # test for functional form
 # conditional mean of residuals equal to zero
@@ -324,7 +324,7 @@ if (res.fform$p.value < 0.05){
 ```
 
 
-Print constant variance (of residuals) diagnostics  
+### Print constant variance (of residuals) diagnostics  
 ```{r, const var}
 # test for heteroskedasticity
 # using the Breusch-Pagan test
