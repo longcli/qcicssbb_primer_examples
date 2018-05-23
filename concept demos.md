@@ -27,6 +27,11 @@ output: html_document
 [Confidence Intervals (RStudio)](https://gallery.shinyapps.io/sampling_and_stderr/)
 
 
+## Maximum Likelihood Estimation
+
+[Likelihood Estimation](https://crlstatistics.shinyapps.io/example_maximum_likelihood/)
+
+
 ## Anscombe's Quartet (Regression)
 
 [Regression Model with Diagnostics (Anscombe's Quartet)](https://crlstatistics.shinyapps.io/regression_diagnostics_demo/)

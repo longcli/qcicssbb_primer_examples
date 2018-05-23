@@ -27,7 +27,7 @@ ui <- dashboardPage(
                        icon = icon("th")
                        )
               
-              ), 
+     ),
      
       menuItem("Chapter 6",
                icon = icon("book", lib = "font-awesome"),
