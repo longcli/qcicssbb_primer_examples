@@ -11,6 +11,7 @@
 
 <meta name="author" content="crl" />
 
+<meta name="date" content="2018-05-28" />
 
 <title>CH08P65 Two Way ANOVA</title>
 
@@ -120,7 +121,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">CH08P65 Two Way ANOVA</h1>
 <h4 class="author"><em>crl</em></h4>
-<h4 class="date"><em>May 84, 2018</em></h4>
+<h4 class="date"><em>May 28, 2018</em></h4>
 
 </div>
 
@@ -174,12 +175,12 @@ The alternate hypothesis HA is that there is a difference between at least two o
 <div id="load-packages" class="section level2">
 <h2>Load Packages</h2>
 <pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## -- Attaching packages ---------------------------------------------------------------------------------------------------- tidyverse 1.2.1 --</code></pre>
+<pre><code>## </code></pre>
 <pre><code>## v ggplot2 2.2.1     v purrr   0.2.4
 ## v tibble  1.4.2     v dplyr   0.7.4
 ## v tidyr   0.8.0     v stringr 1.3.0
 ## v readr   1.1.1     v forcats 0.3.0</code></pre>
-<pre><code>## -- Conflicts ------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
+<pre><code>## 
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()</code></pre>
 <pre class="r"><code>library(car)</code></pre>
@@ -238,11 +239,11 @@ summary(fit)</code></pre>
 <p>The p-value [Pr(&gt;F)] for ‘machine’ tells us if there is a difference between at least two (or more) means. What it does not tell us is between which pairs of means the difference(s) exist. For this we can use contrasts or post-hoc tests.</p>
 <p>Comparing results to the Primer:</p>
 <ul>
-<li><p>SST “material”&quot; matches the R output (872.4)</p></li>
-<li><p>SST “instructor”&quot; matches the R output (2005.6)</p></li>
+<li><p>SST “material” matches the R output (872.4)</p></li>
+<li><p>SST “instructor” matches the R output (2005.6)</p></li>
 <li><p>SSE matches the R output (293.8)</p></li>
-<li><p>F value for “material”&quot; matches the R output (20.8)</p></li>
-<li><p>F value for “instructor”&quot; matches the R output (95.6)</p></li>
+<li><p>F value for “material” matches the R output (20.8)</p></li>
+<li><p>F value for “instructor” matches the R output (95.6)</p></li>
 <li><p>Degrees of Freedom match the R output (2, 1, 14)</p></li>
 </ul>
 <p>MATERIAL<br />
@@ -526,7 +527,7 @@ summary(fit_rank)</code></pre>
 </ul>
 <p>Why use?</p>
 <ul>
-<li>Affirms the results of ‘regular’ ANOVA.<br />
+<li>Affirms the results of ‘regular’ (parametric) ANOVA.<br />
 </li>
 <li>Useful if model assumptions for regular ANOVA are violated.</li>
 </ul>

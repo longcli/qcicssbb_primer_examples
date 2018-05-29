@@ -1,7 +1,7 @@
 ---
 title: "CH08P65 Two Way ANOVA"
 author: "crl"
-date: "May 84, 2018"
+date: "May 28, 2018"
 output: html_document
 ---
 
@@ -111,15 +111,15 @@ the difference(s) exist.  For this we can use contrasts or post-hoc tests.
 
 Comparing results to the Primer:  
 
-* SST "material"" matches the R output (872.4)  
+* SST "material" matches the R output (872.4)  
 
-* SST "instructor"" matches the R output (2005.6)  
+* SST "instructor" matches the R output (2005.6)  
 
 * SSE matches the R output (293.8)  
 
-* F value for "material"" matches the R output (20.8)  
+* F value for "material" matches the R output (20.8)  
 
-* F value for "instructor"" matches the R output (95.6)  
+* F value for "instructor" matches the R output (95.6)  
 
 * Degrees of Freedom match the R output (2, 1, 14)  
 
@@ -411,7 +411,7 @@ Conclusion?
 
 Why use?  
 
-* Affirms the results of 'regular' ANOVA.  
+* Affirms the results of 'regular' (parametric) ANOVA.  
 * Useful if model assumptions for regular ANOVA are violated.  
 
 
