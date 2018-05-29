@@ -120,8 +120,12 @@ ui <- dashboardPage(
               menuItem("One Way ANOVA Page 63",
                        tabName = "oneway_anova_63",
                        icon = icon("th")
-              )
+              ),
               
+              menuItem("Two Way ANOVA Page 65",
+                       tabName = "twoway_anova_65",
+                       icon = icon("th")
+              )
               
               )  # end menuItem Examples
 
@@ -203,6 +207,10 @@ ui <- dashboardPage(
       
       tabItem(tabName = "oneway_anova_63",
               uiOutput("oneway_anova_63_markdown")
+      ),
+      
+      tabItem(tabName = "twoway_anova_65",
+              uiOutput("twoway_anova_65_markdown")
       )
       
       
@@ -284,6 +292,10 @@ server <- function(input, output, session){
   
   output$oneway_anova_63_markdown <- renderUI({
     includeHTML("ch08p63_OneWay_ANOVA.html")
+  })
+  
+  output$twoway_anova_65_markdown <- renderUI({
+    includeHTML("ch08p65_TwoWay_ANOVA.html")
   })
   
 }

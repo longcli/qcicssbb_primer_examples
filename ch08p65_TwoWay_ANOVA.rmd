@@ -1,0 +1,418 @@
+---
+title: "CH08P65 Two Way ANOVA"
+author: "crl"
+date: "May 84, 2018"
+output: html_document
+---
+
+```{r setup}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# QCI Six Sigma Primer
+## Two Way ANOVA
+
+<hr> </hr>
+
+### Overview
+
+_Two Way ANOVA_ is used to compare means for three or more groups for two different factors.  
+
+* See One Way ANOVA. 
+
+_Factor_ is a variable that is thought to influence the outcome of the response.  
+
+*  machine; material; temperature  
+
+_Treatment_ is a level or value of a factor.  
+
+*  machine A or B; material 1 or 2; temperature high or low  
+
+
+### Read More
+
+[Two Way ANOVA Wikipedia](https://en.wikipedia.org/wiki/Two-way_analysis_of_variance)  
+
+[Two Way ANOVA NIST](https://en.wikipedia.org/wiki/Two-way_analysis_of_variance)  
+
+[Examples here](http://www.sthda.com/english/wiki/two-way-anova-test-in-r)  
+
+[ANOVA assumptions STHDA](http://www.sthda.com/english/wiki/one-way-anova-test-in-r#check-anova-assumptions-test-validity)  
+
+[ANOVA assumptions Quick R](https://www.statmethods.net/stats/anovaAssumptions.html)  
+
+
+
+### More
+
+[Presentation](https://docs.google.com/presentation/d/1W4IdxwG_raXJ_NotgdwgyplsfShOQqOzJYarinLmMXw/edit?usp=sharing)  
+
+[Variance Partitioning](https://drive.google.com/file/d/1_JmnMcrZqlPW4glg7GvGE0u4b9Uwn0kK/view?usp=sharing)
+
+
+
+### ANOVA Hypotheses
+
+The null hypothesis H0 is that there is no difference between any of the sample means for each factor.  
+The alternate hypothesis HA is that there is a difference between at least two of the sample means.  
+
+
+<hr> </hr>
+
+# Analysis
+
+## Load Packages
+```{r load packages, echo = TRUE}
+library(tidyverse)
+library(car)
+library(lmtest)
+library(vrtest)
+```
+
+
+
+## Primer Example 
+
+### Prepare the data set.
+
+Often we use stringsAsFactors = FALSE.  
+In this case, with ANOVA, the categorical (explanatory) variables should be factors, 
+therefore we use the default stringsAsFactors = TRUE.
+
+```{r, load data}
+dat <- read.csv('data/ch08p65-two-way-anova.csv')
+glimpse(dat)
+```
+
+## Look at the data
+
+```{r, boxplots}
+ggplot(data = dat, aes(x = instructor, y = result, color = material)) + 
+  geom_boxplot()
+```
+
+From just a boxplot it is not always easy to know if sample means are different.  
+This is why we also use ANOVA.  
+
+
+## Two Way (Main) ANOVA
+
+### Conducting the ANOVA analysis
+
+```{r, oneway anova}
+fit <- aov(result ~ material + instructor, data = dat)
+summary(fit)
+```
+
+
+The p-value [Pr(>F)] for 'machine' tells us if there is a difference between at 
+least two (or more) means. What it does not tell us is between which pairs of means 
+the difference(s) exist.  For this we can use contrasts or post-hoc tests.  
+
+Comparing results to the Primer:  
+
+* SST "material"" matches the R output (872.4)  
+
+* SST "instructor"" matches the R output (2005.6)  
+
+* SSE matches the R output (293.8)  
+
+* F value for "material"" matches the R output (20.8)  
+
+* F value for "instructor"" matches the R output (95.6)  
+
+* Degrees of Freedom match the R output (2, 1, 14)  
+
+MATERIAL  
+The critical value of F with df = (2, 14) at alpha = 0.05 is 3.74  
+The calculated value of F (20.8) is larger than F critical.  
+Therefore we reject H0 that there is no difference between any of the sample means for material.  
+
+INSTRUCTOR  
+The critical value of F with df = (1, 14) at alpha = 0.05 is 4.60  
+The calculated value of F (95.6) is larger than F critical.  
+Therefore we reject H0 that there is no difference between any of the sample means for instructor. 
+
+
+### How can we find out where the differences exist?  
+
+[Stat Notes - ANOVA Post-Hoc Tests](https://drive.google.com/file/d/1hs32aXJ_Nqc0mBeE9qv1yvcTYwwfX8Bg/view?usp=sharing)
+
+
+
+```{r, posthoc}
+TukeyHSD(fit)
+```
+
+
+
+### Plot of means and confidence intervals
+
+```{r, means plot by material}
+# Mean plots
+# Plot response by group
+# Add error bars: mean_se
+# (other values include: mean_sd, mean_ci, median_iqr, ....)
+library(ggpubr)
+ggline(dat, x = "material", y = "result", 
+       add = c("mean_se", "jitter"), 
+       ylab = "Result", xlab = "Material",
+       color = 'instructor')
+```
+
+
+```{r, means plot by instructor}
+# Mean plots
+# Plot weight by group
+# Add error bars: mean_se
+# (other values include: mean_sd, mean_ci, median_iqr, ....)
+library(ggpubr)
+ggline(dat, x = "instructor", y = "result", 
+       add = c("mean_se", "jitter"), 
+       ylab = "Result", xlab = "Instructor",
+       color = 'material')
+```
+
+
+
+## Model Diagnostics  
+
+Testing the assumptions behind the ANOVA method.  
+
+
+### Plot fitted vs residuals
+```{r, fitted vs resids}
+# plot residuals vs fitted
+
+# OLD CODE
+# fitted.y <- fit$fitted
+# plot(fitted.y, residuals(fit))
+# title("Residuals vs Fitted Values")
+# grid()
+
+# NEW CODE
+tmp_res <- residuals(fit)
+tmp_stres <- rstudent(fit)
+
+dat1 <- dat %>% 
+  mutate(fit = fitted(fit)) %>% 
+  mutate(res = tmp_res) %>% 
+  mutate(stres = tmp_stres)
+
+ggplot(dat1, aes(x = fit, y = res)) + 
+  geom_point(aes(color = material, shape = instructor)) + 
+  geom_smooth(method = 'loess', span = 0.75, color = 'red', linetype = 2) +
+  ggtitle('Model Residuals')
+```
+
+### Plot residuals vs factor 1 (material)
+```{r, resids vs factor 1}
+ggplot(dat1, aes(x = material, y = res)) + 
+  geom_point() + 
+  ggtitle('Model Residuals vs Material')
+```
+
+
+### Plot residuals vs factor 2 (instructor)
+```{r, resids vs factor 2}
+ggplot(dat1, aes(x = instructor, y = res)) + 
+  geom_point() + 
+  ggtitle('Model Residuals vs Instructor')
+```
+
+
+
+### Normality diagnostics  
+
+Test normality using Shapiro-Wilks test 
+```{r, shapiro}
+res.shapiro = shapiro.test(residuals(fit))
+
+print(res.shapiro)
+
+if (res.shapiro$p.value < 0.05){
+  print("Nonnormally distributed residuals")} else {
+    print("Normally distributed residuals")
+  }
+```
+
+
+Normality plot of residuals  
+```{r, normality plot resids}
+qqPlot(residuals(fit), main = "Normal Plot of Residuals")
+```
+
+
+
+### Family of influence measures  
+```{r, infl}
+infl.fit = influence.measures(fit)
+
+print(summary(infl.fit))
+
+id.infl = which(apply(infl.fit$is.inf, 1, any))
+
+print("Most influential observations:")
+print(id.infl)
+```
+
+
+
+### Cook's Distance  
+```{r, cooks D}
+# find unusual Cooks Distance
+
+fit.cook = cooks.distance(fit)
+
+print("Influential Cooks D")
+print(which(fit.cook > 3*mean(fit.cook)))
+```
+
+
+
+### Plot Cook's diagnostics  
+```{r, cooks D plot}
+fit.cook = cooks.distance(fit)
+
+id.c = which(fit.cook > 3*mean(fit.cook))
+
+# plot Cooks Distance
+cymax <- 3*mean(fit.cook)
+plot(fit.cook, ylim = c(0, cymax))
+abline(h = c(1,3)*mean(fit.cook), col = c('blue', 'red'))
+title("Cook's Distance")
+grid()
+
+if (length(id.c) > 0){ text(id.c, fit.cook[id.c], rownames(dat)[id.c], pos = 2, xpd = TRUE) }
+```
+
+
+### Print studentized residuals diagnostics  
+```{r, student resids}
+# STUDENTIZED RESIDUALS
+fit.studres = rstudent(fit)
+
+print("Noteworthy studentized residuals")
+print(which(abs(fit.studres) > 3))
+```
+
+
+
+### Plot studentized residuals diagnostics  
+```{r, student resids plot}
+fit.studres = rstudent(fit)
+
+id.sr = which(abs(fit.studres) > 3)
+
+# plot studentized residuals
+plot(rstudent(fit), ylim = c(-4,4))
+abline(h = c(-3,+3), col = 'red', lty = 3)
+title('Studentized Residuals')
+grid()
+
+
+if (length(id.sr) > 0){ text(id.sr, fit.studres[id.sr], rownames(dat)[id.sr], pos = 2, xpd = TRUE) }
+```
+
+
+### Print leverage diagnostics  
+```{r, leverage}
+# LEVERAGE based on HAT MATRIX
+fit.hat = hatvalues(fit)
+
+print("Noteworthy leverage values")
+print(which(fit.hat > 3*mean(fit.hat)))
+```
+
+
+### Plot leverage diagnostics  
+```{r, leverage plot}
+fit.hat = hatvalues(fit)
+
+id.h = which(fit.hat > 3*mean(fit.hat))
+
+
+# plot leverage
+plot(fit.hat)
+abline(h = c(1,3)*mean(fit.hat), col = 2)
+title('Leverage')
+grid()
+
+
+if (length(id.h) > 0){ text(id.h, fit.hat[id.h], rownames(dat)[id.h], pos = 2, xpd = TRUE) }
+```
+
+
+### Print functional form diagnostics  
+```{r, functional form test}
+# test for functional form
+# conditional mean of residuals equal to zero
+# using the RESET test
+
+res.fform = resettest(fit)
+
+if (res.fform$p.value < 0.05){
+  print("Functional Form Misspecified [E(e|X) <> 0]")} else {
+    print("Functional Form Adequate [E(e|X) = 0]")
+  }
+```
+
+
+### Print constant variance (of residuals) diagnostics  
+```{r, const var}
+# test for heteroskedasticity
+# using the Breusch-Pagan test
+
+res.bp = bptest(fit)
+res.bp$p.value
+
+if (res.bp$p.value < 0.05){
+  print("Residuals have NON-constant variance")} else {
+    print("Residuals have constant variance")
+  }
+```
+
+
+Levene's test for equal variances for "material"  
+```{r, levene material}
+leveneTest(result ~ material, data = dat)
+```
+
+Levene's test for equal variances for "instructor"  
+```{r, levene instructor}
+leveneTest(result ~ instructor, data = dat)
+```
+
+
+## Nonparametric alternative to Two Way ANOVA  
+
+* (main effects model; no interaction)  
+
+
+### Rank Transform the Response Variable
+
+Create the rank transform of y (result)
+```{r, rank transform y}
+# rank transform y (result)
+dat1 <- dat1 %>% mutate(rank_y = rank(result))
+```
+
+
+Fit the ANOVA model using the rank transform of y
+```{r, fit rank transform model}
+fit_rank <- aov(rank_y ~ material + instructor, data = dat1)
+summary(fit_rank)
+```
+
+Conclusion?  
+
+* We see that both main effects are significant in the model.  
+
+
+Why use?  
+
+* Affirms the results of 'regular' ANOVA.  
+* Useful if model assumptions for regular ANOVA are violated.  
+
+
+## End
