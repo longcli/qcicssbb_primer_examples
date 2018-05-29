@@ -125,9 +125,14 @@ ui <- dashboardPage(
               menuItem("Two Way ANOVA Page 65",
                        tabName = "twoway_anova_65",
                        icon = icon("th")
+              ),
+              
+              menuItem("Two Way ANOVA with Interaction Page 67",
+                       tabName = "twoway_anova_int_67",
+                       icon = icon("th")
               )
               
-              )  # end menuItem Examples
+              )  # end menuItem Examples  
 
     )  # end sidebarMenu
     
@@ -211,10 +216,14 @@ ui <- dashboardPage(
       
       tabItem(tabName = "twoway_anova_65",
               uiOutput("twoway_anova_65_markdown")
+      ),
+      
+      tabItem(tabName = "twoway_anova_int_67",
+              uiOutput("twoway_anova_int_67_markdown")
       )
       
       
-    )  # end tabItems
+    )  # end tabItems  
   
   )  # end dashboardBody
 
@@ -296,6 +305,10 @@ server <- function(input, output, session){
   
   output$twoway_anova_65_markdown <- renderUI({
     includeHTML("ch08p65_TwoWay_ANOVA.html")
+  })
+  
+  output$twoway_anova_int_67_markdown <- renderUI({
+    includeHTML("ch08p67_TwoWay_ANOVA_w_interaction.html")
   })
   
 }

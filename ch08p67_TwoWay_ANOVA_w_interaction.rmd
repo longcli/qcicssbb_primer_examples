@@ -26,6 +26,8 @@ From NIST
 
 ### Read More
 
+[Understanding and Interpreting Interactions](https://www.unc.edu/courses/2008spring/psyc/270/001/interact.html)  
+
 [Two Way ANOVA Wikipedia](https://en.wikipedia.org/wiki/Two-way_analysis_of_variance)  
 
 [Statistical Interaction Wikipedia](https://en.wikipedia.org/wiki/Interaction_(statistics))
